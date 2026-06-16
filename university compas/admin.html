@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Admin</title>
+  </head>
+  <body>
+    <h1>Administrador</h1>
+    <p>Usuario: <input id="loginUsuario" type="text"></p>
+    <p>Contraseña: <input id="loginPassword" type="password"></p>
+    <p><button id="loginButton" type="button">Iniciar sesión</button></p>
+    <p id="loginMensaje"></p>
+
+    <div id="adminPanel" style="display:none;">
+      <p>Buscar usuario: <input id="searchUsuario" type="text"></p>
+      <p><button id="searchButton" type="button">Buscar</button></p>
+      <p>Usuarios registrados:</p>
+      <table id="usersTable" border="1">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Usuario</th>
+            <th>Email</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <p><button id="logoutButton" type="button">Cerrar sesión</button></p>
+    </div>
+
+    <script src="main.js"></script>
+  </body>
+</html>

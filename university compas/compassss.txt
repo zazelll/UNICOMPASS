@@ -1,0 +1,11 @@
+usuario
+-contraseña
+-correo
+-lugar donde vive
+-escuela dond estudia actualmente
+-nombre(ap,am)
+-nivel academico
+-resultrados encuesta vocacional
+
+pag.web enviar correo a usuario para tener su contraseña
+
