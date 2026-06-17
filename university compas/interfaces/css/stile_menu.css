@@ -1,125 +1,115 @@
-    /* 1. Reset básico y tipografía general */
+/* Estilo simple para el menú */
 * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f4f7f6; /* Un gris muy claro para contrastar con los paneles blancos */
-    color: #333;
-    padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #eef2f5;
+  color: #2c3e50;
+  padding: 20px;
 }
 
-/* 2. Contenedor principal */
-.container { 
-    display: flex; 
-    gap: 25px; 
-    align-items: flex-start; 
-    max-width: 1200px; /* Evita que se estire demasiado en monitores grandes */
-    margin: 0 auto;    /* Centra el contenedor en la pantalla */
+.container {
+  display: flex;
+  gap: 20px;
+  max-width: 1100px;
+  margin: 0 auto;
+  align-items: flex-start;
 }
 
-/* 3. Estilo de Tarjetas para los paneles */
-.left-panel, .right-panel { 
-    background-color: #ffffff;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08); /* Sombra suave */
+.left-panel,
+.right-panel {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 14px;
+  border: 1px solid #d8dde3;
 }
 
-.left-panel { 
-    width: 35%; 
-    min-width: 260px; 
-    display: flex;
-    flex-direction: column;
-    gap: 15px; /* Espaciado uniforme entre los elementos del menú */
+.left-panel {
+  width: 320px;
+  min-width: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
-.right-panel { 
-    flex: 1; 
+.right-panel {
+  flex: 1;
 }
 
-/* 4. Estilos de texto en el menú */
 .left-panel h1 {
-    font-size: 26px;
-    color: #2c3e50;
-    border-bottom: 2px solid #ecf0f1;
-    padding-bottom: 10px;
-    margin-bottom: 5px;
+  font-size: 1.9rem;
+  margin-bottom: 0.5rem;
+  color: #102a43;
 }
 
-.left-panel p { 
-    font-size: 15px;
+.left-panel p {
+  font-size: 0.95rem;
+  line-height: 1.6;
 }
 
-/* Enlaces normales (Ver perfil) */
 .left-panel a {
-    text-decoration: none;
-    color: #3498db;
-    font-weight: 600;
-    transition: color 0.3s;
+  color: #1f6feb;
+  text-decoration: none;
+  font-weight: 600;
 }
 
 .left-panel a:hover {
-    color: #2980b9;
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
-/* 5. Estilización de enlaces como Botones */
-#startSurveyLink, #logoutLink {
-    display: inline-block;
-    padding: 10px 15px;
-    color: white !important;
-    text-decoration: none !important;
-    border-radius: 6px;
-    text-align: center;
-    font-weight: bold;
-    transition: background-color 0.3s;
-    margin-top: 5px;
+#startSurveyLink,
+#logoutLink {
+  display: inline-block;
+  padding: 10px 14px;
+  border-radius: 10px;
+  color: #ffffff !important;
+  text-decoration: none !important;
+  font-weight: 600;
 }
 
 #startSurveyLink {
-    background-color: #2ecc71; /* Verde para acción positiva */
+  background-color: #2f8c52;
 }
+
 #startSurveyLink:hover {
-    background-color: #27ae60;
+  background-color: #276f44;
 }
 
 #logoutLink {
-    background-color: #e74c3c; /* Rojo para cerrar sesión */
-    margin-top: 15px;
+  background-color: #c0392b;
 }
+
 #logoutLink:hover {
-    background-color: #c0392b;
+  background-color: #9e3125;
 }
 
-/* 6. Estilos del mapa */
 .right-panel p {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 15px;
-    color: #2c3e50;
+  font-size: 1rem;
+  margin-bottom: 12px;
+  color: #334e68;
 }
 
-iframe { 
-    width: 100%; 
-    height: 450px; 
-    border: none; 
-    border-radius: 8px; /* Bordes redondeados también para el mapa */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+iframe {
+  width: 100%;
+  min-height: 420px;
+  border: 1px solid #d8dde3;
+  border-radius: 12px;
 }
 
-/* 7. Diseño Responsivo para celulares */
-@media (max-width: 768px) { 
-    .container { 
-        flex-direction: column; 
-    } 
-    .left-panel { 
-        width: 100%; 
-    } 
-    iframe {
-        height: 350px; /* Un poco más pequeño en móviles */
-    }
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .left-panel {
+    width: 100%;
+  }
+
+  iframe {
+    min-height: 300px;
+  }
 }
