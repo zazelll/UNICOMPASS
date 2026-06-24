@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Admin</title>
+    <link rel="stylesheet" href="css/stile_admin.css">
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <h1>Administrador</h1>
+        <p>Usuario: <input id="loginUsuario" type="text"></p>
+        <p>Contraseña: <input id="loginPassword" type="password"></p>
+        <p><button id="loginButton" type="button">Iniciar sesión</button></p>
+        <p id="loginMensaje"></p>
+      </div>
+
+      <div id="adminPanel" class="card" style="display:none;">
+        <p>Buscar usuario: <input id="searchUsuario" type="text"></p>
+        <p><button id="searchButton" type="button">Buscar</button></p>
+        <p class="section-title">Usuarios registrados:</p>
+        <table id="usersTable">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Apellido</th>
+              <th>Usuario</th>
+              <th>Email</th>
+              <th>Escuela</th>
+              <th>Semestre</th>
+              <th>Lugar</th>
+              <th>Promedio</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <p><button id="logoutLink" type="button">Cerrar sesión</button></p>
+      </div>
+    </div>
+
+    <script src="js/main.js"></script>
+  </body>
+</html>
