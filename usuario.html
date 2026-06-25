@@ -1,21 +1,52 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
   <head>
     <meta charset="UTF-8">
-    <title>Usuario</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil - UNiCompass</title>
+    <link rel="stylesheet" href="css/stile_menu.css">
   </head>
   <body>
-    <h1>Perfil de usuario</h1>
-    <p>Nombre completo: <span id="nombreCompleto"></span></p>
-    <p>Usuario: <span id="usuarioActual"></span></p>
-    <p>Correo electrónico: <span id="emailActual"></span></p>
-    <p>Escuela: <span id="escuelaActual"></span></p>
-    <p>Semestre: <span id="semestreActual"></span></p>
-    <p>Lugar de la escuela: <span id="lugarActual"></span></p>
-    <p>Calif. promedio: <span id="promedioActual"></span></p>
-    <p><a href="menu.html">Volver al menú</a></p>
-    <p><a href="editar_perfil.html">Editar perfil</a></p>
-
+    <div class="page-shell">
+      <div class="container">
+        <div class="card">
+          <h1>Perfil de usuario</h1>
+          <p class="intro">Consulta tus datos guardados y actualiza tu perfil cuando lo necesites.</p>
+          <div class="form-group">
+            <label>Nombre completo</label>
+            <p><span id="nombreCompleto"></span></p>
+          </div>
+          <div class="form-group">
+            <label>Usuario</label>
+            <p><span id="usuarioActual"></span></p>
+          </div>
+          <div class="form-group">
+            <label>Correo electrónico</label>
+            <p><span id="emailActual"></span></p>
+          </div>
+          <div class="form-group">
+            <label>Escuela</label>
+            <p><span id="escuelaActual"></span></p>
+          </div>
+          <div class="form-group">
+            <label>Semestre</label>
+            <p><span id="semestreActual"></span></p>
+          </div>
+          <div class="form-group">
+            <label>Lugar de la escuela</label>
+            <p><span id="lugarActual"></span></p>
+          </div>
+          <div class="form-group">
+            <label>Calif. promedio</label>
+            <p><span id="promedioActual"></span></p>
+          </div>
+          <div class="action-row">
+            <a class="button" href="menu.html">Volver al menú</a>
+            <a class="button button-secondary" href="editar_perfil.html">Editar perfil</a>
+          </div>
+        </div>
+      </div>
+    </div>
     <script src="main.js"></script>
   </body>
 </html>

@@ -1,23 +1,59 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
   <head>
     <meta charset="UTF-8">
-    <title>Registro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - UNiCompass</title>
+    <link rel="stylesheet" href="css/stile_menu.css">
   </head>
   <body>
-    <h1>Registro</h1>
-    <p>Nombre: <input id="registerNombre" type="text"></p>
-    <p>Apellido: <input id="registerApellido" type="text"></p>
-    <p>Usuario: <input id="registerUsuario" type="text"></p>
-    <p>Correo electrónico: <input id="registerEmail" type="email"></p>
-    <p>Contraseña: <input id="registerPassword" type="password"></p>
-    <p>Escuela: <input id="registerEscuela" type="text"></p>
-    <p>Semestre: <input id="registerSemestre" type="text"></p>
-    <p>Lugar de la escuela: <input id="registerLugar" type="text"></p>
-    <p>Calif. promedio: <input id="registerPromedio" type="text"></p>
-    <p><button id="registerButton" type="button">Registrarse</button></p>
-    <p id="registerMensaje"></p>
-    <p>¿Ya tienes una cuenta? <a href="secion.html">Inicia sesión aquí</a></p>
+    <div class="page-shell">
+      <div class="card">
+        <h1>Crear cuenta</h1>
+        <p class="intro">Completa los datos para comenzar tu búsqueda vocacional.</p>
+        <div class="form-group">
+          <label for="registerNombre">Nombre</label>
+          <input id="registerNombre" type="text">
+        </div>
+        <div class="form-group">
+          <label for="registerApellido">Apellido</label>
+          <input id="registerApellido" type="text">
+        </div>
+        <div class="form-group">
+          <label for="registerUsuario">Usuario</label>
+          <input id="registerUsuario" type="text">
+        </div>
+        <div class="form-group">
+          <label for="registerEmail">Correo electrónico</label>
+          <input id="registerEmail" type="email">
+        </div>
+        <div class="form-group">
+          <label for="registerPassword">Contraseña</label>
+          <input id="registerPassword" type="password">
+        </div>
+        <div class="form-group">
+          <label for="registerEscuela">Escuela</label>
+          <input id="registerEscuela" type="text">
+        </div>
+        <div class="form-group">
+          <label for="registerSemestre">Semestre</label>
+          <input id="registerSemestre" type="text">
+        </div>
+        <div class="form-group">
+          <label for="registerLugar">Lugar de la escuela</label>
+          <input id="registerLugar" type="text">
+        </div>
+        <div class="form-group">
+          <label for="registerPromedio">Calif. promedio</label>
+          <input id="registerPromedio" type="text">
+        </div>
+        <div class="action-row">
+          <button class="button" id="registerButton" type="button">Registrarse</button>
+          <a class="button button-secondary" href="secion.html">Iniciar sesión</a>
+        </div>
+        <p id="registerMensaje" class="small-text"></p>
+      </div>
+    </div>
     <script src="main.js"></script>
   </body>
 </html>

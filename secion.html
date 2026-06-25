@@ -1,16 +1,31 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
   <head>
     <meta charset="UTF-8">
-    <title>Iniciar sesión</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar sesión - UNiCompass</title>
+    <link rel="stylesheet" href="css/stile_menu.css">
   </head>
   <body>
-    <h1>Iniciar sesión</h1>
-    <p>Usuario: <input id="loginUsuario" type="text"></p>
-    <p>Contraseña: <input id="loginPassword" type="password"></p>
-    <p><button id="loginButton" type="button">Iniciar sesión</button></p>
-    <p id="loginMensaje"></p>
-    <p>¿No tienes cuenta? <a href="registro.html">Regístrate aquí</a></p>
+    <div class="page-shell">
+      <div class="card">
+        <h1>Iniciar sesión</h1>
+        <p class="intro">Accede a tu cuenta para continuar con la evaluación vocacional.</p>
+        <div class="form-group">
+          <label for="loginUsuario">Usuario</label>
+          <input id="loginUsuario" type="text">
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">Contraseña</label>
+          <input id="loginPassword" type="password">
+        </div>
+        <div class="action-row">
+          <button class="button" id="loginButton" type="button">Iniciar sesión</button>
+          <a class="button button-secondary" href="registro.html">Regístrate</a>
+        </div>
+        <p id="loginMensaje" class="small-text"></p>
+      </div>
+    </div>
     <script src="main.js"></script>
   </body>
 </html>
