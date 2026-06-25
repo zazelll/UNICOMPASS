@@ -30,16 +30,103 @@ a:hover {
   gap: 20px;
 }
 
+.hero-section {
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  width: 100vw;
+  min-height: 50vh;
+  background: linear-gradient(135deg, rgba(59,130,246,0.72), rgba(15,23,42,0.88)),
+    url("../university compas/recursos/Gemini_Generated_Image_4oosb74oosb74oos.png") center/cover no-repeat;
+  background-blend-mode: multiply;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.hero-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top, rgba(255,255,255,0.18), transparent 55%);
+}
+
+.hero-overlay {
+  position: relative;
+  width: 100%;
+  max-width: 980px;
+  padding: 28px 24px;
+  text-align: center;
+  color: #ffffff;
+}
+
+.hero-text h1 {
+  font-size: clamp(2rem, 4vw, 3.6rem);
+  margin-bottom: 0.75rem;
+  color: #ffffff;
+}
+
+.hero-subtitle {
+  font-size: 1.05rem;
+  max-width: 720px;
+  margin: 0 auto;
+  line-height: 1.8;
+  color: #f8fafc;
+}
+
+.content-section {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 24px 16px 32px;
+}
+
+.info-card {
+  min-height: calc(50vh - 40px);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.info-placeholder {
+  background: #f3f7fb;
+  border: 1px dashed #cbd5e1;
+  padding: 18px;
+  border-radius: 14px;
+}
+
+.info-placeholder h3 {
+  margin-bottom: 0.65rem;
+  color: #102a43;
+}
+
+.info-scroll {
+  max-height: calc(50vh - 220px);
+  overflow-y: auto;
+  padding-right: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.info-scroll p {
+  margin-bottom: 0.85rem;
+}
+
 .container {
   display: flex;
   gap: 20px;
   max-width: 1100px;
   margin: 0 auto;
   align-items: flex-start;
+  flex-wrap: wrap;
 }
 
 .card,
 .left-panel,
+.center-panel,
 .right-panel {
   background-color: #ffffff;
   padding: 24px;
@@ -48,16 +135,23 @@ a:hover {
   box-shadow: 0 12px 30px rgba(44, 62, 80, 0.08);
 }
 
-.left-panel {
-  width: 320px;
-  min-width: 260px;
+.left-panel,
+.center-panel,
+.right-panel {
   display: flex;
   flex-direction: column;
   gap: 14px;
 }
 
+.left-panel {
+  width: 320px;
+  min-width: 260px;
+}
+
+.center-panel,
 .right-panel {
   flex: 1;
+  min-width: 260px;
 }
 
 h1 {

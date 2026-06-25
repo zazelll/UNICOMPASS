@@ -10,7 +10,9 @@
       <div class="container">
         <div class="left-panel">
           <h1>Menú</h1>
+          
           <p>Bienvenido, <span id="nombreCompleto"></span></p>
+          
           <p>Usuario: <span id="usuarioActual"></span></p>
           <p><a href="usuario.html">Ver perfil</a></p>
           <p>Estatus: <span id="estatusActual"></span></p>
@@ -24,7 +26,18 @@
           <p>Mapa de Google:</p>
           <iframe id="mapFrame" src="https://www.google.com/maps?q=Ciudad%20de%20M%C3%A9xico&output=embed" allowfullscreen="" loading="lazy"></iframe>
         </div>
+        <div class="right-panel">
+          <p>Escuelas seleccionadas:</p>
+          
+          <ul id="seleccionadasList">
+            <!-- Las escuelas seleccionadas se mostrarán aquí -->
+          </ul>
+          <p>ver mas</p>
+          <a class="button" href="escuelas.html">Ver escuelas</a>
+        </div>
+
       </div>
+      <a class="button" href="nosotros.html">Sobre nosotros</a>
     </div>
     <script src="main.js"></script>
   </body>
