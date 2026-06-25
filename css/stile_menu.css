@@ -304,6 +304,18 @@ th {
     width: 100%;
   }
 
+  .left-panel {
+    order: 1;
+  }
+
+  .map-panel {
+    order: 2;
+  }
+
+  .selection-panel {
+    order: 3;
+  }
+
   iframe {
     min-height: 320px;
   }
