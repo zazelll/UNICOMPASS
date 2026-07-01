@@ -12,6 +12,7 @@
           <h1>Menú</h1>
           
           <p>Bienvenido, <span id="nombreCompleto"></span></p>
+          <p>Nivel académico: <span id="registerNivelEscuela"></span></p>
           
           <p>Usuario: <span id="usuarioActual"></span></p>
           <p><a href="usuario.html">Ver perfil</a></p>
@@ -27,9 +28,10 @@
           <iframe id="mapFrame" src="https://www.google.com/maps?q=Ciudad%20de%20M%C3%A9A9xico&output=embed" allowfullscreen="" loading="lazy"></iframe>
         </div>
         <div class="right-panel selection-panel">
-          <p>Escuelas seleccionadas:</p>
           
+          <p>Escuela actualmente:</p>
           <ul id="seleccionadasList">
+          <p>Escuelas seleccionadas:</p>
             <!-- Las escuelas seleccionadas se mostrarán aquí -->
           </ul>
           <p>ver mas</p>
@@ -39,6 +41,7 @@
       </div>
       <a class="button" href="nosotros.html">Sobre nosotros</a>
     </div>
-    <script src="main.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/menu.js"></script>
   </body>
 </html>
