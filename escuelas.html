@@ -10,22 +10,22 @@
     <div class="page-shell">
       <div class="card">
         <h1>Escuelas</h1>
-        <p>tus selecciones</p>
+        <p class="intro">Plantilla lista para mostrar tus resultados cuando se conecte la encuesta.</p>
 
         <div class="container">
-          <div class="left-panel">
+          <div class="left-panel chart-panel">
             <h2>Sugerencias</h2>
-            <p>tus sugerencias</p>
+            <div id="suggestionBox" class="suggestion-card"></div>
           </div>
 
-          <div class="center-panel">
+          <div class="center-panel chart-panel">
             <h2>Estadísticas</h2>
-            <p>tus estadísticas</p>
+            <canvas id="statsChart" width="420" height="240"></canvas>
           </div>
 
-          <div class="right-panel">
+          <div class="right-panel chart-panel">
             <h2>Habilidades</h2>
-            <p>tus habilidades</p>
+            <canvas id="skillsChart" width="420" height="240"></canvas>
           </div>
         </div>
 
@@ -34,5 +34,7 @@
         </div>
       </div>
     </div>
+
+    <script src="js/escuelas.js"></script>
   </body>
 </html>

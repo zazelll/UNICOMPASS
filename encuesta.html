@@ -15,10 +15,69 @@
 
             <p>para la encuesta necesitamos conocer algunos datos sobre ti.</p>
 
-            <!-- Formulario de la encuesta -->
+            <div class="form-section">
+              <h2>Habilidades</h2>
+              <p>Describe tus habilidades principales, fortalezas y áreas en las que te destacas.</p>
+            </div>
 
-            
-            <a class="button" href="menu.html">Volver al menú</a>
+            <div class="form-section">
+              <h2>Gustos</h2>
+              <p>Indica tus gustos, intereses y actividades que más disfrutas.</p>
+
+              <div class="question-card">
+                <h3>¿Qué color te gusta más?</h3>
+                <p>Selecciona una opción. Cada color tiene un valor del 1 al 5 que se podrá usar en las gráficas de escuelas.</p>
+
+                <div class="color-options">
+                  <label class="color-option">
+                    <input type="radio" name="colorFavorito" value="1" data-color="rojo">
+                    <span class="color-swatch rojo"></span>
+                    Rojo 
+                  </label>
+
+                  <label class="color-option">
+                    <input type="radio" name="colorFavorito" value="2" data-color="verde">
+                    <span class="color-swatch verde"></span>
+                    Verde 
+                  </label>
+
+                  <label class="color-option">
+                    <input type="radio" name="colorFavorito" value="3" data-color="azul">
+                    <span class="color-swatch azul"></span>
+                    Azul 
+                  </label>
+
+                  <label class="color-option">
+                    <input type="radio" name="colorFavorito" value="4" data-color="morado">
+                    <span class="color-swatch morado"></span>
+                    Morado
+                  </label>
+
+                  <label class="color-option">
+                    <input type="radio" name="colorFavorito" value="5" data-color="amarillo">
+                    <span class="color-swatch amarillo"></span>
+                    Amarillo
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h2>Lo que sabe</h2>
+              <p>Registra los conocimientos, temas o herramientas que ya dominas.</p>
+            </div>
+
+            <div class="form-section">
+              <h2>Otra</h2>
+              <p>Agrega cualquier información adicional que quieras compartir.</p>
+            </div>
+
+            <div class="question-card confirmation-card">
+              <h3>¿Estás seguro(a) de tus respuestas?</h3>
+              <p>Si estás conforme, puedes enviarlas para ver tus resultados en escuelas.</p>
+              <button class="button" id="finishSurveyButton" type="button">Enviar y ver resultados</button>
+              <p id="surveyMessage" class="small-text" aria-live="polite"></p>
+            </div>
 
           </div>
         </div>
@@ -27,5 +86,6 @@
     </div>
     <script src="js/storage.js"></script>
     <script src="js/profile.js"></script>
+    <script src="js/encuesta.js"></script>
   </body>
 </html>

@@ -1,48 +1,137 @@
+class BaseFormController {
+  constructor(api) {
+    this.api = api;
+  }
+
+  setMessage(element, message, isError = false) {
+    if (!element) return;
+    element.textContent = message;
+    element.style.color = isError ? '#c0392b' : '#2f8c52';
+  }
+}
+
+class RegistrationController extends BaseFormController {
+  constructor(api, elements) {
+    super(api);
+    this.elements = elements;
+    this.init();
+  }
+
+  init() {
+    if (!this.elements.registerButton) return;
+
+    this.elements.registerButton.addEventListener('click', () => {
+      this.showPrivacyModal();
+    });
+
+    if (this.elements.acceptPrivacyButton) {
+      this.elements.acceptPrivacyButton.addEventListener('click', () => {
+        if (this.elements.privacyCheckbox && !this.elements.privacyCheckbox.checked) {
+          this.setMessage(this.elements.registerMensaje, 'Debes aceptar los términos de privacidad.', true);
+          return;
+        }
+        this.hidePrivacyModal();
+        this.processRegistration();
+      });
+    }
+
+    if (this.elements.privacyModal) {
+      this.elements.privacyModal.addEventListener('click', (event) => {
+        if (event.target === this.elements.privacyModal) {
+          this.hidePrivacyModal();
+        }
+      });
+    }
+  }
+
+  showPrivacyModal() {
+    if (this.elements.privacyModal) {
+      this.elements.privacyModal.classList.add('is-open');
+      this.elements.privacyModal.setAttribute('aria-hidden', 'false');
+      if (this.elements.privacyCheckbox) this.elements.privacyCheckbox.checked = false;
+    }
+  }
+
+  hidePrivacyModal() {
+    if (this.elements.privacyModal) {
+      this.elements.privacyModal.classList.remove('is-open');
+      this.elements.privacyModal.setAttribute('aria-hidden', 'true');
+    }
+  }
+
+  collectData() {
+    return {
+      nombre: this.elements.registerNombre ? this.elements.registerNombre.value.trim() : '',
+      apellido: this.elements.registerApellido ? this.elements.registerApellido.value.trim() : '',
+      usuario: this.elements.registerUsuario ? this.elements.registerUsuario.value.trim() : '',
+      contraseña: this.elements.registerPassword ? this.elements.registerPassword.value : '',
+      email: this.elements.registerEmail ? this.elements.registerEmail.value.trim() : '',
+      escuela: this.elements.registerEscuela ? this.elements.registerEscuela.value.trim() : '',
+      semestre: this.elements.registerSemestre ? this.elements.registerSemestre.value.trim() : '',
+      lugar: this.elements.registerLugar ? this.elements.registerLugar.value.trim() : '',
+      promedio: this.elements.registerPromedio ? this.elements.registerPromedio.value.trim() : '',
+      nivelEscuela: this.elements.registerNivelEscuela ? this.elements.registerNivelEscuela.value : ''
+    };
+  }
+
+  processRegistration() {
+    const data = this.collectData();
+
+    if (!data.nombre || !data.apellido || !data.usuario || !data.contraseña) {
+      this.setMessage(this.elements.registerMensaje, 'Completa todos los campos.', true);
+      return;
+    }
+
+    if (this.api.findUser(data.usuario)) {
+      this.setMessage(this.elements.registerMensaje, 'Ese usuario ya existe.', true);
+      return;
+    }
+
+    const ok = this.api.registerUser(
+      data.nombre,
+      data.apellido,
+      data.usuario,
+      data.contraseña,
+      data.email,
+      data.escuela,
+      data.semestre,
+      data.lugar,
+      data.promedio,
+      data.nivelEscuela
+    );
+
+    if (ok) {
+      this.setMessage(this.elements.registerMensaje, 'Registro guardado. Inicia sesión.');
+      setTimeout(() => {
+        window.location.href = 'secion.html';
+      }, 1200);
+    } else {
+      this.setMessage(this.elements.registerMensaje, 'No se pudo guardar el registro. Intenta de nuevo.', true);
+    }
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   const api = window.UNICOMPASS;
   if (!api) return;
 
-  const registerNombre = document.getElementById('registerNombre');
-  const registerApellido = document.getElementById('registerApellido');
-  const registerUsuario = document.getElementById('registerUsuario');
-  const registerPassword = document.getElementById('registerPassword');
-  const registerEmail = document.getElementById('registerEmail');
-  const registerEscuela = document.getElementById('registerEscuela');
-  const registerSemestre = document.getElementById('registerSemestre');
-  const registerLugar = document.getElementById('registerLugar');
-  const registerPromedio = document.getElementById('registerPromedio');
-  const registerNivelEscuela = document.getElementById('registerNivelEscuela');
-  const registerButton = document.getElementById('registerButton');
-  const registerMensaje = document.getElementById('registerMensaje');
+  const elements = {
+    registerNombre: document.getElementById('registerNombre'),
+    registerApellido: document.getElementById('registerApellido'),
+    registerUsuario: document.getElementById('registerUsuario'),
+    registerPassword: document.getElementById('registerPassword'),
+    registerEmail: document.getElementById('registerEmail'),
+    registerEscuela: document.getElementById('registerEscuela'),
+    registerSemestre: document.getElementById('registerSemestre'),
+    registerLugar: document.getElementById('registerLugar'),
+    registerPromedio: document.getElementById('registerPromedio'),
+    registerNivelEscuela: document.getElementById('registerNivelEscuela'),
+    registerButton: document.getElementById('registerButton'),
+    registerMensaje: document.getElementById('registerMensaje'),
+    privacyModal: document.getElementById('privacyModal'),
+    acceptPrivacyButton: document.getElementById('acceptPrivacyButton'),
+    privacyCheckbox: document.getElementById('privacyCheckbox')
+  };
 
-  if (!registerButton) return;
-
-  registerButton.addEventListener('click', () => {
-    const nombre = registerNombre ? registerNombre.value.trim() : '';
-    const apellido = registerApellido ? registerApellido.value.trim() : '';
-    const usuario = registerUsuario ? registerUsuario.value.trim() : '';
-    const contraseña = registerPassword ? registerPassword.value : '';
-    const email = registerEmail ? registerEmail.value.trim() : '';
-    const escuela = registerEscuela ? registerEscuela.value.trim() : '';
-    const semestre = registerSemestre ? registerSemestre.value.trim() : '';
-    const lugar = registerLugar ? registerLugar.value.trim() : '';
-    const promedio = registerPromedio ? registerPromedio.value.trim() : '';
-    const nivelEscuela = registerNivelEscuela ? registerNivelEscuela.value : '';
-
-    if (!nombre || !apellido || !usuario || !contraseña) {
-      if (registerMensaje) registerMensaje.textContent = 'Completa todos los campos.';
-      return;
-    }
-
-    if (api.findUser(usuario)) {
-      if (registerMensaje) registerMensaje.textContent = 'Ese usuario ya existe.';
-      return;
-    }
-
-    api.registerUser(nombre, apellido, usuario, contraseña, email, escuela, semestre, lugar, promedio, nivelEscuela);
-    if (registerMensaje) registerMensaje.textContent = 'Registro guardado. Inicia sesión.';
-    setTimeout(() => {
-      window.location.href = 'secion.html';
-    }, 800);
-  });
+  new RegistrationController(api, elements);
 });

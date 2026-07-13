@@ -58,11 +58,30 @@
         </div>
         <div class="action-row">
           <button class="button" id="registerButton" type="button">Registrarse</button>
+          <alert id="registerAlert" class="alert" style="display: none;"></alert>
           <a class="button button-secondary" href="secion.html">Iniciar sesión</a>
         </div>
-        <p id="registerMensaje" class="small-text"></p>
+        <p id="registerMensaje" class="small-text" aria-live="polite"></p>
       </div>
     </div>
+
+    <div id="privacyModal" class="privacy-modal" aria-hidden="true">
+      <div class="privacy-modal-content" role="dialog" aria-modal="true" aria-labelledby="privacyTitle">
+        <h2 id="privacyTitle">Términos de privacidad</h2>
+        <p class="privacy-text">
+          Aquí puedes agregar el texto completo de tus términos de privacidad, políticas de uso y la información que deseas informar al usuario.
+        </p>
+        <p class="privacy-text privacy-template">
+          Ejemplo: Al registrarte, aceptas que tus datos se usen para crear y gestionar tu cuenta, ofrecer servicios dentro de la plataforma y mejorar tu experiencia.
+        </p>
+        <label class="privacy-checkbox">
+          <input id="privacyCheckbox" type="checkbox">
+          Acepto los términos de privacidad.
+        </label>
+        <button class="button" id="acceptPrivacyButton" type="button">Aceptar</button>
+      </div>
+    </div>
+
     <script src="js/storage.js"></script>
     <script src="js/registro.js"></script>
   </body>
