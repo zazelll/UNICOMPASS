@@ -16,6 +16,49 @@
             <p>para la encuesta necesitamos conocer algunos datos sobre ti.</p>
 
             <div class="form-section">
+              <h2>saber mas de ti...</h2>
+              <p>danos algunos detalles sobre ti</p>
+
+              <div class="question-card">
+                <h3>¿Que carrera te gustaria hacer?</h3>
+                <p>busca en la lista una carrera que te gustaria estudiar en el futuro.</p>
+                <select id="carreraSelect">
+                  <option value="">Selecciona una carrera</option>
+                  <option value="Ingeniería en Sistemas Computacionales">Ingeniería en Sistemas Computacionales</option>
+                  <option value="Medicina">Medicina</option>
+                  <option value="Derecho">Derecho</option>
+                  <option value="Arquitectura">Arquitectura</option>
+                  <option value="Psicología">Psicología</option>
+                  <option value="Administración de Empresas">Administración de Empresas</option>
+                  <option value="Diseño Gráfico">Diseño Gráfico</option>
+                  <option value="Ingeniería Civil">Ingeniería Civil</option>
+                  <option value="Contaduría Pública">Contaduría Pública</option>
+                  <option value="Enfermería">Enfermería</option>
+                  <option value="Ingeniería Mecánica">Ingeniería Mecánica</option>
+                  <option value="Ingeniería Electrónica">Ingeniería Electrónica</option>
+                  <option value="veterinaria">Veterinaria</option>
+                  <option value="cocina">Cocina</option>
+                </select>
+            </div>
+            <div class="question-card">
+                <h3>si no encuentras tu carrera preferida puedes describirla</h3>
+                <p>escribe el nombre de la carrera que te gustaria estudiar en el futuro.</p>
+                <input type="text" id="otraCarreraInput" placeholder="Escribe tu carrera preferida">
+            </div>
+            <div class="question-card">
+                <h3>¿Por que elegiste esta carrera?</h3>
+                <p>describe las razones por las que elegiste esta carrera.</p>
+                <input type="text" id="porQueElegiste" placeholder="Escribe las razones">
+            </div>
+            <div class="question-card">
+                <h3>¿Tienes intención de cambiar de opción?</h3>
+                <p>describe las razones por las que consideras cambiar de opción.</p>
+                <input type="text" id="cambiarOpcion" placeholder="Escribe las razones">
+            </div>
+            </div>
+
+            <h2>AVERIGUAREMOS CUAL ES TU CARRERA IDEAL</h2>
+            <div class="form-section">
               <h2>Habilidades</h2>
               <p>Describe tus habilidades principales, fortalezas y áreas en las que te destacas.</p>
             </div>
@@ -23,43 +66,6 @@
             <div class="form-section">
               <h2>Gustos</h2>
               <p>Indica tus gustos, intereses y actividades que más disfrutas.</p>
-
-              <div class="question-card">
-                <h3>¿Qué color te gusta más?</h3>
-                <p>Selecciona una opción. Cada color tiene un valor del 1 al 5 que se podrá usar en las gráficas de escuelas.</p>
-
-                <div class="color-options">
-                  <label class="color-option">
-                    <input type="radio" name="colorFavorito" value="1" data-color="rojo">
-                    <span class="color-swatch rojo"></span>
-                    Rojo 
-                  </label>
-
-                  <label class="color-option">
-                    <input type="radio" name="colorFavorito" value="2" data-color="verde">
-                    <span class="color-swatch verde"></span>
-                    Verde 
-                  </label>
-
-                  <label class="color-option">
-                    <input type="radio" name="colorFavorito" value="3" data-color="azul">
-                    <span class="color-swatch azul"></span>
-                    Azul 
-                  </label>
-
-                  <label class="color-option">
-                    <input type="radio" name="colorFavorito" value="4" data-color="morado">
-                    <span class="color-swatch morado"></span>
-                    Morado
-                  </label>
-
-                  <label class="color-option">
-                    <input type="radio" name="colorFavorito" value="5" data-color="amarillo">
-                    <span class="color-swatch amarillo"></span>
-                    Amarillo
-                  </label>
-                </div>
-              </div>
             </div>
 
             <div class="form-section">
@@ -68,9 +74,26 @@
             </div>
 
             <div class="form-section">
-              <h2>Otra</h2>
-              <p>Agrega cualquier información adicional que quieras compartir.</p>
+              <h2>Datos extra</h2>
+              <div class="question-card">
+                <h3>¿Estas deacuerdo con tus respuestas?</h3>
+                <p>selecciona si o no</p>
+                <label class="agreement-option">
+                  <input type="radio" name="agreement" value="si">
+                  Sí
+                </label>
+                <label class="agreement-option">
+                  <input type="radio" name="agreement" value="no">
+                  No
+                </label>
+              </div>
+              <div class="question-card">
+                <h3>¿Que más agregarias para saber más?</h3>
+                <p>escribe lo que consideres importante para saber más de ti.</p>
+                <input type="text" id="informacionExtra" placeholder="Escribe información adicional">
             </div>
+            </div>
+            
 
             <div class="question-card confirmation-card">
               <h3>¿Estás seguro(a) de tus respuestas?</h3>
