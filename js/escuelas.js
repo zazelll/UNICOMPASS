@@ -169,15 +169,15 @@
 
       const result = this.user.vocacionalResultado;
       const primary = this.api.CAREERS[result.categoriaPrincipal];
-      const lugar = (this.user.lugar || '').trim();
+      const lugar = (this.user.lugarVive || this.user.lugar || '').trim();
       const query = lugar ? `${primary.escuela} cerca de ${lugar}` : `${primary.escuela}`;
 
       if (mapFrame) mapFrame.src = `https://www.google.com/maps?q=${encodeURIComponent(query)}&output=embed`;
       if (mapLink) mapLink.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
       if (mapHint) {
         mapHint.textContent = lugar
-          ? `Buscando "${primary.escuela}" cerca de "${lugar}" (el lugar registrado de tu escuela).`
-          : `No registraste un lugar en tu perfil, así que buscamos "${primary.escuela}" en general. Agrega tu ubicación en tu perfil para resultados más cercanos.`;
+          ? `Buscando "${primary.escuela}" cerca de "${lugar}".`
+          : `No registraste dónde vives, así que buscamos "${primary.escuela}" en general. Agrega tu ubicación en tu perfil para resultados más cercanos a ti.`;
       }
     }
 

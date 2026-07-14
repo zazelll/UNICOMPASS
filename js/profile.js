@@ -17,7 +17,7 @@ class ProfileController extends ProfileBaseController {
   }
 
   init() {
-    if (this.elements.nombreCompleto || this.elements.usuarioActual || this.elements.estatusActual || this.elements.escuelaActual || this.elements.semestreActual || this.elements.lugarActual || this.elements.promedioActual || this.elements.emailActual) {
+    if (this.elements.nombreCompleto || this.elements.usuarioActual || this.elements.estatusActual || this.elements.escuelaActual || this.elements.semestreActual || this.elements.lugarActual || this.elements.promedioActual || this.elements.emailActual || this.elements.lugarViveActual) {
       if (!this.user) {
         this.redirectToLogin();
         return;
@@ -38,7 +38,7 @@ class ProfileController extends ProfileBaseController {
   }
 
   renderProfile() {
-    const { nombreCompleto, usuarioActual, estatusActual, escuelaActual, semestreActual, lugarActual, promedioActual, emailActual } = this.elements;
+    const { nombreCompleto, usuarioActual, estatusActual, escuelaActual, semestreActual, lugarActual, promedioActual, emailActual, lugarViveActual } = this.elements;
 
     if (nombreCompleto) nombreCompleto.textContent = `${this.user.nombre || ''} ${this.user.apellido || ''}`.trim();
     if (usuarioActual) usuarioActual.textContent = this.user.usuario || '';
@@ -47,13 +47,14 @@ class ProfileController extends ProfileBaseController {
     if (semestreActual) semestreActual.textContent = this.user.semestre || '';
     if (lugarActual) lugarActual.textContent = this.user.lugar || '';
     if (promedioActual) promedioActual.textContent = this.user.promedio || '';
+    if (lugarViveActual) lugarViveActual.textContent = this.user.lugarVive || '';
     if (estatusActual) {
       estatusActual.textContent = `Escuela: ${this.user.escuela || ''} · Semestre: ${this.user.semestre || ''} · Promedio: ${this.user.promedio || ''}`;
     }
   }
 
   fillForm() {
-    const { editNombre, editApellido, editUsuario, editEmail, editEscuela, editNivelEscuela, editSemestre, editLugar, editPromedio } = this.elements;
+    const { editNombre, editApellido, editUsuario, editEmail, editEscuela, editNivelEscuela, editSemestre, editLugar, editPromedio, editLugarVive } = this.elements;
 
     if (editNombre) editNombre.value = this.user.nombre || '';
     if (editApellido) editApellido.value = this.user.apellido || '';
@@ -64,6 +65,7 @@ class ProfileController extends ProfileBaseController {
     if (editSemestre) editSemestre.value = this.user.semestre || '';
     if (editLugar) editLugar.value = this.user.lugar || '';
     if (editPromedio) editPromedio.value = this.user.promedio || '';
+    if (editLugarVive) editLugarVive.value = this.user.lugarVive || '';
   }
 
   bindSave() {
@@ -76,13 +78,14 @@ class ProfileController extends ProfileBaseController {
       const semestre = this.elements.editSemestre ? this.elements.editSemestre.value.trim() : '';
       const lugar = this.elements.editLugar ? this.elements.editLugar.value.trim() : '';
       const promedio = this.elements.editPromedio ? this.elements.editPromedio.value.trim() : '';
+      const lugarVive = this.elements.editLugarVive ? this.elements.editLugarVive.value.trim() : '';
 
       if (!nombre || !apellido) {
         if (this.elements.editMensaje) this.elements.editMensaje.textContent = 'Nombre y apellido son requeridos.';
         return;
       }
 
-      if (this.api.updateUser(this.user.usuario, { nombre, apellido, email, escuela, semestre, lugar, promedio, nivelEscuela })) {
+      if (this.api.updateUser(this.user.usuario, { nombre, apellido, email, escuela, semestre, lugar, promedio, nivelEscuela, lugarVive })) {
         if (this.elements.editMensaje) this.elements.editMensaje.textContent = 'Cambios guardados correctamente.';
         setTimeout(() => {
           window.location.href = 'menu.html';
@@ -107,6 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
     lugarActual: document.getElementById('lugarActual'),
     promedioActual: document.getElementById('promedioActual'),
     emailActual: document.getElementById('emailActual'),
+    lugarViveActual: document.getElementById('lugarViveActual'),
     editNombre: document.getElementById('editNombre'),
     editApellido: document.getElementById('editApellido'),
     editUsuario: document.getElementById('editUsuario'),
@@ -116,6 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
     editSemestre: document.getElementById('editSemestre'),
     editLugar: document.getElementById('editLugar'),
     editPromedio: document.getElementById('editPromedio'),
+    editLugarVive: document.getElementById('editLugarVive'),
     guardarButton: document.getElementById('guardarButton'),
     editMensaje: document.getElementById('editMensaje')
   };

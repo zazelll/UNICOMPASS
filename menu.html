@@ -10,38 +10,41 @@
       <div class="container">
         <div class="left-panel">
           <h1>Menú</h1>
-          
           <p>Bienvenido, <span id="nombreCompleto"></span></p>
           <p>Nivel académico: <span id="registerNivelEscuela"></span></p>
-          
           <p>Usuario: <span id="usuarioActual"></span></p>
-          <p><a href="usuario.html">Ver perfil</a></p>
+          <p>Vives en: <span id="lugarViveActual"></span></p>
           <p>Estatus: <span id="estatusActual"></span></p>
+          <p><a href="usuario.html">Ver perfil</a></p>
+
           <div class="action-row">
             <a class="button" id="startSurveyLink" href="vocacional.html">Empezar encuesta</a>
             <a class="button button-danger" id="logoutLink" href="secion.html">Cerrar sesión</a>
           </div>
-          <p>Escuelas seleccionadas:</p>
-        </div>
-        <div class="right-panel map-panel">
-          <p>Mapa de Google:</p>
-          <iframe id="mapFrame" src="https://www.google.com/maps?q=Ciudad%20de%20M%C3%A9A9xico&output=embed" allowfullscreen="" loading="lazy"></iframe>
-        </div>
-        <div class="right-panel selection-panel">
-          
-          <p>Escuela actualmente:</p>
-          <ul id="seleccionadasList">
-          <p>Escuelas seleccionadas:</p>
-            <!-- Las escuelas seleccionadas se mostrarán aquí -->
-          </ul>
-          <p>ver mas</p>
-          <a class="button" href="escuelas.html">Ver escuelas</a>
         </div>
 
+        <div class="right-panel map-panel">
+          <p id="mapCaption">Mapa de Google:</p>
+          <iframe id="mapFrame" src="https://www.google.com/maps?q=Ciudad%20de%20M%C3%A9xico&output=embed" allowfullscreen="" loading="lazy"></iframe>
+          <p id="mapNote" class="small-text"></p>
+        </div>
       </div>
-      <a class="button" href="nosotros.html">Sobre nosotros</a>
+
+      <div class="container">
+        <div class="center-panel selection-panel">
+          <h2>Sugerencia</h2>
+          <div id="suggestionBox" class="suggestion-card"></div>
+          <a class="button" href="escuelas.html">Ver escuelas</a>
+        </div>
+      </div>
+
+      <div class="action-row">
+        <a class="button" href="nosotros.html">Sobre nosotros</a>
+      </div>
     </div>
     <script src="js/storage.js"></script>
+    <script src="js/carreras-data.js"></script>
     <script src="js/menu.js"></script>
+    <script src="js/escuelas.js"></script>
   </body>
 </html>

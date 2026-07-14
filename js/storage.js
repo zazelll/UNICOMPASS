@@ -31,10 +31,10 @@
   }
 
   class AuthService extends StorageService {
-    registerUser(nombre, apellido, usuario, contraseña, email, escuela, semestre, lugar, promedio, nivelEscuela) {
+    registerUser(nombre, apellido, usuario, contraseña, email, escuela, semestre, lugar, promedio, nivelEscuela, lugarVive) {
       if (this.findUser(usuario)) return false;
       const users = this.getUsers();
-      users.push({ nombre, apellido, usuario, contraseña, email, escuela, semestre, lugar, promedio, nivelEscuela });
+      users.push({ nombre, apellido, usuario, contraseña, email, escuela, semestre, lugar, promedio, nivelEscuela, lugarVive });
       this.saveUsers(users);
       return true;
     }

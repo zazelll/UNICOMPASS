@@ -69,6 +69,7 @@ class RegistrationController extends BaseFormController {
       escuela: this.elements.registerEscuela ? this.elements.registerEscuela.value.trim() : '',
       semestre: this.elements.registerSemestre ? this.elements.registerSemestre.value.trim() : '',
       lugar: this.elements.registerLugar ? this.elements.registerLugar.value.trim() : '',
+      lugarVive: this.elements.registerLugarVive ? this.elements.registerLugarVive.value.trim() : '',
       promedio: this.elements.registerPromedio ? this.elements.registerPromedio.value.trim() : '',
       nivelEscuela: this.elements.registerNivelEscuela ? this.elements.registerNivelEscuela.value : ''
     };
@@ -97,7 +98,8 @@ class RegistrationController extends BaseFormController {
       data.semestre,
       data.lugar,
       data.promedio,
-      data.nivelEscuela
+      data.nivelEscuela,
+      data.lugarVive
     );
 
     if (ok) {
