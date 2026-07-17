@@ -10,17 +10,18 @@ class BaseFormController {
   }
 }
 
-// URL de tu Apps Script (Aplicación Web)
-const GOOGLE_SHEET_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbxT_4sWCVFxZ5dln549q9LvFlqM8kc3Wl4xrsYvOAajdgRSHrZDBYSDcr528ki2jNv0/exec';
+// Pega aquí la URL que te dio Google al "Implementar" el Apps Script como Aplicación Web.
+// Ejemplo: 'https://script.google.com/macros/s/AKfycb.../exec'
+const GOOGLE_SHEET_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycby_yIRgLPJWLmWOEw6M0puV1kpCazv4Kg8veKnJQmiwSLAPbX4vslqMN81CKGJ0DY3WNQ/exec';
 
 function sendToGoogleSheet(data) {
-  // Eliminada la condición estricta que causaba el bloqueo.
-  if (!GOOGLE_SHEET_WEBAPP_URL) {
-    console.warn('GOOGLE_SHEET_WEBAPP_URL no está configurada.');
+  if (!GOOGLE_SHEET_WEBAPP_URL || GOOGLE_SHEET_WEBAPP_URL === 'https://script.google.com/macros/s/AKfycby_yIRgLPJWLmWOEw6M0puV1kpCazv4Kg8veKnJQmiwSLAPbX4vslqMN81CKGJ0DY3WNQ/exec') {
+    console.warn('GOOGLE_SHEET_WEBAPP_URL no está configurada todavía; no se envió copia a Sheets.');
     return;
   }
 
-  // Se ejecuta el envío de datos de forma limpia
+  // mode: 'no-cors' evita el bloqueo de CORS del navegador; a cambio no podemos
+  // leer la respuesta, pero para solo "loguear" el registro nos basta.
   fetch(GOOGLE_SHEET_WEBAPP_URL, {
     method: 'POST',
     mode: 'no-cors',
@@ -125,16 +126,11 @@ class RegistrationController extends BaseFormController {
 
     if (ok) {
       const { contraseña, ...datosSinContrasena } = data;
-      
-      // Enviamos los datos a Google Sheets
       sendToGoogleSheet(datosSinContrasena);
-      
-      this.setMessage(this.elements.registerMensaje, 'Registro guardado con éxito. Redirigiendo...');
-      
-      // Damos 1.5 segundos para asegurar que la petición salga antes de cambiar de página
+      this.setMessage(this.elements.registerMensaje, 'Registro guardado. Inicia sesión.');
       setTimeout(() => {
         window.location.href = 'secion.html';
-      }, 1500);
+      }, 1200);
     } else {
       this.setMessage(this.elements.registerMensaje, 'No se pudo guardar el registro. Intenta de nuevo.', true);
     }
