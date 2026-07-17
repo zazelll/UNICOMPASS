@@ -10,6 +10,28 @@ class BaseFormController {
   }
 }
 
+// Pega aquí la URL que te dio Google al "Implementar" el Apps Script como Aplicación Web.
+// Ejemplo: 'https://script.google.com/macros/s/AKfycb.../exec'
+const GOOGLE_SHEET_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbxT_4sWCVFxZ5dln549q9LvFlqM8kc3Wl4xrsYvOAajdgRSHrZDBYSDcr528ki2jNv0/exec';
+
+function sendToGoogleSheet(data) {
+  if (!GOOGLE_SHEET_WEBAPP_URL || GOOGLE_SHEET_WEBAPP_URL === 'https://script.google.com/macros/s/AKfycbxT_4sWCVFxZ5dln549q9LvFlqM8kc3Wl4xrsYvOAajdgRSHrZDBYSDcr528ki2jNv0/exec') {
+    console.warn('GOOGLE_SHEET_WEBAPP_URL no está configurada todavía; no se envió copia a Sheets.');
+    return;
+  }
+
+  // mode: 'no-cors' evita el bloqueo de CORS del navegador; a cambio no podemos
+  // leer la respuesta, pero para solo "loguear" el registro nos basta.
+  fetch(GOOGLE_SHEET_WEBAPP_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(data)
+  }).catch((error) => {
+    console.warn('No se pudo enviar la copia a Google Sheets:', error);
+  });
+}
+
 class RegistrationController extends BaseFormController {
   constructor(api, elements) {
     super(api);
@@ -103,6 +125,8 @@ class RegistrationController extends BaseFormController {
     );
 
     if (ok) {
+      const { contraseña, ...datosSinContrasena } = data;
+      sendToGoogleSheet(datosSinContrasena);
       this.setMessage(this.elements.registerMensaje, 'Registro guardado. Inicia sesión.');
       setTimeout(() => {
         window.location.href = 'secion.html';
