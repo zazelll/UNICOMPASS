@@ -10,26 +10,24 @@ class BaseFormController {
   }
 }
 
-// Pega aquí la URL que te dio Google al "Implementar" el Apps Script como Aplicación Web.
-// Ejemplo: 'https://script.google.com/macros/s/AKfycb.../exec'
+// URL de tu Apps Script (Aplicación Web)
 const GOOGLE_SHEET_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbxT_4sWCVFxZ5dln549q9LvFlqM8kc3Wl4xrsYvOAajdgRSHrZDBYSDcr528ki2jNv0/exec';
 
 function sendToGoogleSheet(data) {
-  // Limpiamos la condición: solo valida que la URL exista y no tenga el placeholder genérico
-  if (!GOOGLE_SHEET_WEBAPP_URL || GOOGLE_SHEET_WEBAPP_URL.includes('https://script.google.com/macros/s/AKfycbxT_4sWCVFxZ5dln549q9LvFlqM8kc3Wl4xrsYvOAajdgRSHrZDBYSDcr528ki2jNv0/exec')) {
-    console.warn('GOOGLE_SHEET_WEBAPP_URL no está configurada todavía; no se envió copia a Sheets.');
-    return Promise.reject('URL no configurada');
+  // Eliminada la condición estricta que causaba el bloqueo.
+  if (!GOOGLE_SHEET_WEBAPP_URL) {
+    console.warn('GOOGLE_SHEET_WEBAPP_URL no está configurada.');
+    return;
   }
 
-  // Agregamos 'return' al fetch para poder controlar la redirección cuando termine de enviar
-  return fetch(GOOGLE_SHEET_WEBAPP_URL, {
+  // Se ejecuta el envío de datos de forma limpia
+  fetch(GOOGLE_SHEET_WEBAPP_URL, {
     method: 'POST',
     mode: 'no-cors',
     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
     body: JSON.stringify(data)
   }).catch((error) => {
     console.warn('No se pudo enviar la copia a Google Sheets:', error);
-    throw error;
   });
 }
 
@@ -98,7 +96,7 @@ class RegistrationController extends BaseFormController {
     };
   }
 
-processRegistration() {
+  processRegistration() {
     const data = this.collectData();
 
     if (!data.nombre || !data.apellido || !data.usuario || !data.contraseña) {
@@ -127,23 +125,16 @@ processRegistration() {
 
     if (ok) {
       const { contraseña, ...datosSinContrasena } = data;
-      this.setMessage(this.elements.registerMensaje, 'Guardando registro...');
-
-      // Esperamos que se envíe la petición antes de redirigir al login
-      sendToGoogleSheet(datosSinContrasena)
-        .then(() => {
-          this.setMessage(this.elements.registerMensaje, 'Registro guardado con éxito. Inicia sesión.');
-          setTimeout(() => {
-            window.location.href = 'secion.html';
-          }, 1200);
-        })
-        .catch(() => {
-          // Si el Sheets falla por red, igual permitimos iniciar sesión porque ya se guardó localmente
-          this.setMessage(this.elements.registerMensaje, 'Registro completado. Inicia sesión.');
-          setTimeout(() => {
-            window.location.href = 'secion.html';
-          }, 1200);
-        });
+      
+      // Enviamos los datos a Google Sheets
+      sendToGoogleSheet(datosSinContrasena);
+      
+      this.setMessage(this.elements.registerMensaje, 'Registro guardado con éxito. Redirigiendo...');
+      
+      // Damos 1.5 segundos para asegurar que la petición salga antes de cambiar de página
+      setTimeout(() => {
+        window.location.href = 'secion.html';
+      }, 1500);
     } else {
       this.setMessage(this.elements.registerMensaje, 'No se pudo guardar el registro. Intenta de nuevo.', true);
     }
