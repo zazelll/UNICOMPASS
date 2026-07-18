@@ -15,7 +15,7 @@ class BaseFormController {
 const GOOGLE_SHEET_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycby_yIRgLPJWLmWOEw6M0puV1kpCazv4Kg8veKnJQmiwSLAPbX4vslqMN81CKGJ0DY3WNQ/exec';
 
 function sendToGoogleSheet(data) {
-  if (!GOOGLE_SHEET_WEBAPP_URL || GOOGLE_SHEET_WEBAPP_URL === 'https://script.google.com/macros/s/AKfycby_yIRgLPJWLmWOEw6M0puV1kpCazv4Kg8veKnJQmiwSLAPbX4vslqMN81CKGJ0DY3WNQ/exec') {
+  if (!GOOGLE_SHEET_WEBAPP_URL || GOOGLE_SHEET_WEBAPP_URL === 'PEGA_AQUI_TU_URL_DE_APPS_SCRIPT') {
     console.warn('GOOGLE_SHEET_WEBAPP_URL no está configurada todavía; no se envió copia a Sheets.');
     return;
   }
