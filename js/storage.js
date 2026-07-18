@@ -31,12 +31,20 @@
   }
 
   class AuthService extends StorageService {
-    registerUser(nombre, apellido, usuario, contraseña, email, escuela, semestre, lugar, promedio, nivelEscuela, lugarVive) {
+    registerUser(nombre, apellido, usuario, contraseña, email, estado, municipio) {
       if (this.findUser(usuario)) return false;
       const users = this.getUsers();
-      users.push({ nombre, apellido, usuario, contraseña, email, escuela, semestre, lugar, promedio, nivelEscuela, lugarVive });
+      users.push({ nombre, apellido, usuario, contraseña, email, estado, municipio });
       this.saveUsers(users);
       return true;
+    }
+
+    // Arma una dirección legible a partir de estado/municipio (catálogo real de INEGI),
+    // usada para las búsquedas de mapa (menú y escuelas).
+    getDireccionCompleta(user) {
+      if (!user) return '';
+      const partes = [user.municipio, user.estado].filter(Boolean);
+      return partes.join(', ').trim();
     }
 
     loginUser(usuario, contraseña) {
@@ -76,6 +84,7 @@
     getCurrentUser: authService.getCurrentUser.bind(authService),
     clearCurrentUser: authService.clearCurrentUser.bind(authService),
     registerUser: authService.registerUser.bind(authService),
+    getDireccionCompleta: authService.getDireccionCompleta.bind(authService),
     loginUser: authService.loginUser.bind(authService),
     updateUser: authService.updateUser.bind(authService),
     isAdmin: authService.isAdmin.bind(authService)

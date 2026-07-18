@@ -28,38 +28,21 @@
           <input id="registerEmail" type="email">
         </div>
         <div class="form-group">
-          <label for="registerPassword">Contraseña de usuario</label>
-          <input id="registerPassword" type="password">
+          <label for="registerPassword">Contraseña de usuario (8 dígitos numéricos)</label>
+          <input id="registerPassword" type="password" inputmode="numeric" pattern="[0-9]{8}" minlength="8" maxlength="8" placeholder="Ej. 12345678">
         </div>
         <div class="form-group">
-          <label for="registerLugarVive">Ciudad o lugar donde vives</label>
-          <input id="registerLugarVive" type="text" placeholder="Ej. Coyoacán, Ciudad de México">
-          <p class="small-text">Usaremos esto para mostrarte en el mapa las escuelas más cercanas a ti.</p>
-        </div>
-        <div class="form-group">
-          <label for="registerEscuela">nombre de la Escuela</label>
-          <input id="registerEscuela" type="text">
-        </div>
-      <div class="form-group">
-          <label for="registerNivelEscuela">Nivel de escuela</label>
-          <select id="registerNivelEscuela">
-            <option value="">Selecciona un nivel</option>
-            <option value="preparatoria">Preparatoria</option>
-            <option value="universidad">Universidad</option>
+          <label for="registerEstado">Estado donde vives</label>
+          <select id="registerEstado">
+            <option value="">Selecciona un estado</option>
           </select>
         </div>
-
         <div class="form-group">
-          <label for="registerSemestre">Semestre que cursa</label>
-          <input id="registerSemestre" type="text">
-        </div>
-        <div class="form-group">
-          <label for="registerLugar">Lugar de la escuela</label>
-          <input id="registerLugar" type="text">
-        </div>
-        <div class="form-group">
-          <label for="registerPromedio">Calif. promedio</label>
-          <input id="registerPromedio" type="text">
+          <label for="registerMunicipio">Municipio o alcaldía donde vives</label>
+          <select id="registerMunicipio" disabled>
+            <option value="">Primero selecciona un estado</option>
+          </select>
+          <p class="small-text">Usaremos esto para mostrarte en el mapa las escuelas más cercanas a ti.</p>
         </div>
         <div class="action-row">
           <button class="button" id="registerButton" type="button">Registrarse</button>
@@ -88,6 +71,7 @@
     </div>
 
     <script src="js/storage.js"></script>
+    <script src="js/mexico-estados-municipios.js"></script>
     <script src="js/registro.js"></script>
   </body>
 </html>
