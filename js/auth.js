@@ -20,14 +20,41 @@ document.addEventListener('DOMContentLoaded', () => {
   const refrescarSheetButton = document.getElementById('refrescarSheetButton');
   const sheetMensaje = document.getElementById('sheetMensaje');
 
+  function normalizeUserRecord(user) {
+    return {
+      fecha: user?.Fecha || user?.fecha || user?.fechaRegistro || user?.createdAt || '',
+      nombre: user?.Nombre || user?.nombre || user?.name || '',
+      apellido: user?.Apellido || user?.apellido || user?.lastName || '',
+      usuario: user?.Usuario || user?.usuario || user?.username || '',
+      email: user?.Email || user?.email || user?.correo || '',
+      estado: user?.Estado || user?.estado || user?.state || '',
+      municipio: user?.Municipio || user?.municipio || user?.municipality || ''
+    };
+  }
+
+  function normalizeUsers(users) {
+    if (!Array.isArray(users)) return [];
+    return users.map((user) => normalizeUserRecord(user));
+  }
+
   function fillUsersTable(users) {
     if (!usersTable) return;
     const tbody = usersTable.querySelector('tbody');
     if (!tbody) return;
+
+    const registros = normalizeUsers(users);
     tbody.innerHTML = '';
-    users.forEach((user) => {
+
+    if (!registros.length) {
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td>${user.Fecha || ''}</td><td>${user.Nombre || user.nombre || ''}</td><td>${user.Apellido || user.apellido || ''}</td><td>${user.Usuario || user.usuario || ''}</td><td>${user.Email || user.email || ''}</td><td>${user.Estado || user.estado || ''}</td><td>${user.Municipio || user.municipio || ''}</td>`;
+      tr.innerHTML = '<td colspan="7">No hay registros disponibles.</td>';
+      tbody.appendChild(tr);
+      return;
+    }
+
+    registros.forEach((user) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${user.fecha || ''}</td><td>${user.nombre || ''}</td><td>${user.apellido || ''}</td><td>${user.usuario || ''}</td><td>${user.email || ''}</td><td>${user.estado || ''}</td><td>${user.municipio || ''}</td>`;
       tbody.appendChild(tr);
     });
   }
@@ -49,17 +76,28 @@ document.addEventListener('DOMContentLoaded', () => {
     fetch(url)
       .then((response) => response.json())
       .then((data) => {
-        if (!data.ok) {
-          if (sheetMensaje) sheetMensaje.textContent = `Error: ${data.error || 'no se pudo cargar'}`;
+        const registros = Array.isArray(data?.registros)
+          ? data.registros
+          : Array.isArray(data)
+            ? data
+            : [];
+
+        if (!data?.ok && !registros.length) {
+          const locales = api.getUsers ? api.getUsers() : [];
+          fillUsersTable(locales);
+          if (sheetMensaje) sheetMensaje.textContent = 'No se pudo leer Google Sheets; mostrando registros guardados en este navegador.';
           return;
         }
-        fillUsersTable(data.registros || []);
+
+        fillUsersTable(registros);
         if (sheetMensaje) {
-          sheetMensaje.textContent = `${(data.registros || []).length} registro(s) cargado(s) desde Google Sheets.`;
+          sheetMensaje.textContent = `${registros.length} registro(s) cargado(s) desde Google Sheets.`;
         }
       })
       .catch((error) => {
-        if (sheetMensaje) sheetMensaje.textContent = 'No se pudo conectar con Google Sheets. Revisa la URL y tu conexión.';
+        const locales = api.getUsers ? api.getUsers() : [];
+        fillUsersTable(locales);
+        if (sheetMensaje) sheetMensaje.textContent = 'No se pudo conectar con Google Sheets; mostrando registros guardados en este navegador.';
         console.warn('Error cargando registros de Sheets:', error);
       });
   }
@@ -102,12 +140,19 @@ document.addEventListener('DOMContentLoaded', () => {
   if (searchButton) {
     searchButton.addEventListener('click', () => {
       const term = searchUsuario ? searchUsuario.value.trim() : '';
-      const user = term ? api.findUser(term) : null;
-      fillUsersTable(user ? [user] : []);
+      const locales = api.getUsers ? api.getUsers() : [];
+      const filtered = term
+        ? locales.filter((user) => {
+            const texto = `${user.nombre || ''} ${user.apellido || ''} ${user.usuario || ''} ${user.email || ''}`.toLowerCase();
+            return texto.includes(term.toLowerCase());
+          })
+        : locales;
+
+      fillUsersTable(filtered);
       if (sheetMensaje) {
-        sheetMensaje.textContent = user
-          ? 'Mostrando resultado de la búsqueda local (solo este navegador).'
-          : 'No se encontró ese usuario en este navegador.';
+        sheetMensaje.textContent = term
+          ? (filtered.length ? 'Mostrando resultados de la búsqueda local.' : 'No se encontró ese usuario en este navegador.')
+          : 'Mostrando registros guardados en este navegador.';
       }
     });
   }
