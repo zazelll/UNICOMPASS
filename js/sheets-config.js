@@ -12,5 +12,5 @@
 // que escribiste dentro de tu Apps Script (Código.gs).
 // ============================================================
 
-const GOOGLE_SHEET_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbxEjg1ZQS5qwVQIaKKKGawm6l3_WTEhGn763X8rts1a9tQPY6LuLoPltiPF4jhTJwRqcg/exec';
+const GOOGLE_SHEET_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyz5lG-HpsHAAXcc6Eo1ef3d0uoLZhQxRiD_4zLF_j3dF_UYCIt1uC00lXGjMKwOrK6Zw/exec';
 const ADMIN_TOKEN = 'aza';
