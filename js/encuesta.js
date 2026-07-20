@@ -1,4 +1,5 @@
 (function () {
+<<<<<<< Updated upstream
   function Q(id, section, text, opts) {
     return {
       id,
@@ -382,6 +383,47 @@
       title: 'Valores Laborales',
       desc: 'Sobre cómo te gustaría que fuera tu futuro trabajo.'
     }
+=======
+  // Las preguntas ya NO se escriben aquí. Siempre se traen desde la pestaña
+  // "Preguntas" de tu Google Sheet, la misma que edita el admin desde admin.html.
+  // Cada respuesta trae su(s) categoría(s) (TEC, ING, ART, HUM, NEG, SAL, CIE, DER)
+  // y con eso se suman los puntos para saber la carrera del usuario.
+  let QUESTIONS = [];
+
+  async function cargarPreguntasRemotas() {
+    try {
+      const response = await fetch(`${GOOGLE_SHEET_WEBAPP_URL}?action=preguntas`);
+      const data = await response.json();
+
+      if (data && data.ok && Array.isArray(data.preguntas)) {
+        QUESTIONS = data.preguntas;
+      }
+    } catch (error) {
+      console.warn('No se pudieron cargar las preguntas desde Google Sheets:', error);
+    }
+
+    return QUESTIONS.length > 0;
+  }
+
+  const SECTIONS = ['gustos', 'habilidades', 'conocimientos', 'valores'];
+  const SECTION_META = {
+    gustos: {
+      title: 'Gustos e Intereses',
+      desc: 'No hay respuestas correctas o incorrectas, elige lo que más se parezca a ti.'
+    },
+    habilidades: {
+      title: 'Habilidades',
+      desc: 'Piensa en situaciones reales que ya te han pasado.'
+    },
+    conocimientos: {
+      title: 'Conocimientos y Aptitudes',
+      desc: 'Sobre lo que ya sabes o se te facilita aprender.'
+    },
+    valores: {
+      title: 'Valores Laborales',
+      desc: 'Sobre cómo te gustaría que fuera tu futuro trabajo.'
+    }
+>>>>>>> Stashed changes
   };
 
   // Pasos: 0 = intro (datos ya en el HTML), 1-4 = secciones del quiz, 5 = datos extra + confirmación
@@ -407,7 +449,10 @@
         this.elements.nombreCompleto.textContent = `${this.user.nombre || ''} ${this.user.apellido || ''}`.trim();
       }
       if (this.elements.usuarioActual) this.elements.usuarioActual.textContent = this.user.usuario || '';
+<<<<<<< Updated upstream
       if (this.elements.nivelEscuelaActual) this.elements.nivelEscuelaActual.textContent = this.user.nivelEscuela || '';
+=======
+>>>>>>> Stashed changes
 
       if (this.elements.prevButton) {
         this.elements.prevButton.addEventListener('click', () => this.goToStep(this.currentStep - 1));
@@ -545,7 +590,11 @@
       return { categoryScores, habilidadesScores, estadisticasScores };
     }
 
+<<<<<<< Updated upstream
     finishSurvey() {
+=======
+    async finishSurvey() {
+>>>>>>> Stashed changes
       const agreement = document.querySelector('input[name="agreement"]:checked');
       if (!agreement) {
         if (this.elements.surveyMessage) {
@@ -588,7 +637,11 @@
         informacionExtra: informacionExtra ? informacionExtra.value.trim() : ''
       };
 
+<<<<<<< Updated upstream
       const ok = this.api.updateUser(this.user.usuario, { vocacionalResultado });
+=======
+      const ok = await this.api.updateUser(this.user.usuario, { vocacionalResultado });
+>>>>>>> Stashed changes
 
       if (this.elements.surveyMessage) {
         if (ok) {
@@ -607,6 +660,7 @@
     }
   }
 
+<<<<<<< Updated upstream
   document.addEventListener('DOMContentLoaded', () => {
     const api = window.UNICOMPASS;
     if (!api) return;
@@ -615,6 +669,25 @@
       nombreCompleto: document.getElementById('nombreCompleto'),
       usuarioActual: document.getElementById('usuarioActual'),
       nivelEscuelaActual: document.getElementById('nivelEscuelaActual'),
+=======
+  document.addEventListener('DOMContentLoaded', async () => {
+    const api = window.UNICOMPASS;
+    if (!api) return;
+
+    const progressLabel = document.getElementById('quizProgressLabel');
+    if (progressLabel) progressLabel.textContent = 'Cargando encuesta...';
+
+    const cargoBien = await cargarPreguntasRemotas();
+
+    if (!cargoBien) {
+      if (progressLabel) progressLabel.textContent = 'No se pudieron cargar las preguntas. Intenta más tarde.';
+      return;
+    }
+
+    const elements = {
+      nombreCompleto: document.getElementById('nombreCompleto'),
+      usuarioActual: document.getElementById('usuarioActual'),
+>>>>>>> Stashed changes
       stepIntro: document.getElementById('stepIntro'),
       stepQuiz: document.getElementById('stepQuiz'),
       stepFinal: document.getElementById('stepFinal'),

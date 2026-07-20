@@ -1,3 +1,0 @@
-zaza
-
-puerto:5432

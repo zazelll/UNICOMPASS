@@ -1,8 +1,13 @@
+<<<<<<< Updated upstream
 // Deben coincidir EXACTAMENTE con lo que pusiste en tu Apps Script (codigo_apps_script_v4.gs):
 // - la misma URL de implementación que usa registro.js
 // - el mismo valor de ADMIN_TOKEN que escribiste ahí
 const GOOGLE_SHEET_WEBAPP_URL_ADMIN = 'https://script.google.com/macros/s/AKfycbxgq_DEN3ODP7ttexPo1tC_5nKYclCLGNbVfVjLce3pwIqIXtjvsi1SSgvyQ6YrROnz_w/exec';
 const ADMIN_TOKEN = 'papu';
+=======
+// Se usa en secion.html (login de estudiante) y en admin.html (login de admin).
+// Ambas páginas comparten los mismos campos: loginUsuario, loginPassword, loginButton.
+>>>>>>> Stashed changes
 
 document.addEventListener('DOMContentLoaded', () => {
   const api = window.UNICOMPASS;
@@ -12,10 +17,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const loginPassword = document.getElementById('loginPassword');
   const loginButton = document.getElementById('loginButton');
   const loginMensaje = document.getElementById('loginMensaje');
+
+  // Estos solo existen en admin.html
   const adminPanel = document.getElementById('adminPanel');
-  const searchUsuario = document.getElementById('searchUsuario');
-  const searchButton = document.getElementById('searchButton');
   const usersTable = document.getElementById('usersTable');
+  const filtroUsuario = document.getElementById('filtroUsuario');
+  const refrescarSheetButton = document.getElementById('refrescarSheetButton');
+  const sheetMensaje = document.getElementById('sheetMensaje');
   const logoutLink = document.getElementById('logoutLink');
   const refrescarSheetButton = document.getElementById('refrescarSheetButton');
   const sheetMensaje = document.getElementById('sheetMensaje');
@@ -37,9 +45,12 @@ document.addEventListener('DOMContentLoaded', () => {
     return users.map((user) => normalizeUserRecord(user));
   }
 
-  function fillUsersTable(users) {
+  let registrosCargados = [];
+
+  function mostrarUsuariosEnTabla(usuarios) {
     if (!usersTable) return;
     const tbody = usersTable.querySelector('tbody');
+<<<<<<< Updated upstream
     if (!tbody) return;
 
     const registros = normalizeUsers(users);
@@ -100,40 +111,81 @@ document.addEventListener('DOMContentLoaded', () => {
         if (sheetMensaje) sheetMensaje.textContent = 'No se pudo conectar con Google Sheets; mostrando registros guardados en este navegador.';
         console.warn('Error cargando registros de Sheets:', error);
       });
+=======
+    tbody.innerHTML = '';
+
+    usuarios.forEach((usuario) => {
+      const fila = document.createElement('tr');
+      fila.innerHTML = `
+        <td>${usuario.Fecha || ''}</td>
+        <td>${usuario.Nombre || ''}</td>
+        <td>${usuario.Apellido || ''}</td>
+        <td>${usuario.Usuario || ''}</td>
+        <td>${usuario.Email || ''}</td>
+        <td>${usuario.Estado || ''}</td>
+        <td>${usuario.Municipio || ''}</td>
+      `;
+      tbody.appendChild(fila);
+    });
+  }
+
+  async function cargarUsuariosDesdeSheets() {
+    if (sheetMensaje) sheetMensaje.textContent = 'Cargando...';
+
+    const url = `${GOOGLE_SHEET_WEBAPP_URL}?token=${encodeURIComponent(ADMIN_TOKEN)}`;
+    const respuesta = await fetch(url);
+    const datos = await respuesta.json();
+
+    if (!datos.ok) {
+      if (sheetMensaje) sheetMensaje.textContent = `Error: ${datos.error}`;
+      return;
+    }
+
+    registrosCargados = datos.registros;
+    mostrarUsuariosEnTabla(registrosCargados);
+    if (sheetMensaje) sheetMensaje.textContent = `${registrosCargados.length} usuario(s) encontrados.`;
+>>>>>>> Stashed changes
   }
 
   if (loginButton) {
-    loginButton.addEventListener('click', () => {
-      const usuario = loginUsuario ? loginUsuario.value.trim() : '';
-      const contraseña = loginPassword ? loginPassword.value : '';
+    loginButton.addEventListener('click', async () => {
+      const usuario = loginUsuario.value.trim();
+      const contraseña = loginPassword.value;
 
       if (!usuario || !contraseña) {
-        if (loginMensaje) loginMensaje.textContent = 'Completa usuario y contraseña.';
+        loginMensaje.textContent = 'Completa usuario y contraseña.';
         return;
       }
 
+      // Primero revisamos si es el admin (no necesita internet, es un valor fijo).
       if (api.isAdmin(usuario, contraseña)) {
-        if (loginMensaje) loginMensaje.textContent = 'Bienvenido admin.';
+        loginMensaje.textContent = 'Bienvenido admin.';
         if (adminPanel) adminPanel.style.display = 'block';
+<<<<<<< Updated upstream
         cargarDesdeGoogleSheets();
+=======
+        const preguntasPanel = document.getElementById('preguntasPanel');
+        if (preguntasPanel) preguntasPanel.style.display = 'block';
+        cargarUsuariosDesdeSheets();
+        if (typeof cargarPreguntasAdmin === 'function') cargarPreguntasAdmin();
+>>>>>>> Stashed changes
         return;
       }
 
-      if (!api.findUser(usuario)) {
-        if (loginMensaje) loginMensaje.textContent = 'Usuario no existe.';
-        return;
-      }
+      // Si no es admin, revisamos contra los usuarios guardados en Google Sheets.
+      loginMensaje.textContent = 'Verificando...';
+      const respuesta = await api.loginUser(usuario, contraseña);
 
-      if (!api.loginUser(usuario, contraseña)) {
-        if (loginMensaje) loginMensaje.textContent = 'Contraseña incorrecta.';
-        return;
+      if (respuesta.ok) {
+        window.location.href = 'menu.html';
+      } else {
+        loginMensaje.textContent = respuesta.error || 'Usuario o contraseña incorrectos.';
       }
-
-      window.location.href = 'menu.html';
     });
   }
 
   if (refrescarSheetButton) {
+<<<<<<< Updated upstream
     refrescarSheetButton.addEventListener('click', cargarDesdeGoogleSheets);
   }
 
@@ -154,12 +206,25 @@ document.addEventListener('DOMContentLoaded', () => {
           ? (filtered.length ? 'Mostrando resultados de la búsqueda local.' : 'No se encontró ese usuario en este navegador.')
           : 'Mostrando registros guardados en este navegador.';
       }
+=======
+    refrescarSheetButton.addEventListener('click', cargarUsuariosDesdeSheets);
+  }
+
+  if (filtroUsuario) {
+    filtroUsuario.addEventListener('input', () => {
+      const texto = filtroUsuario.value.trim().toLowerCase();
+      const filtrados = registrosCargados.filter((u) =>
+        (u.Usuario || '').toLowerCase().includes(texto)
+      );
+      mostrarUsuariosEnTabla(filtrados);
+>>>>>>> Stashed changes
     });
   }
 
   if (logoutLink) {
     logoutLink.addEventListener('click', () => {
       api.clearCurrentUser();
+      window.location.reload();
     });
   }
 });

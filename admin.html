@@ -26,6 +26,7 @@
           <p id="loginMensaje" class="small-text"></p>
         </div>
 
+<<<<<<< Updated upstream
         <div id="adminPanel" class="card" style="display:none; width: 100%; max-width: 100%;">
           <h2>Panel de administración</h2>
           <p class="intro">Registros obtenidos en vivo desde tu Google Sheet (todos los usuarios, de cualquier dispositivo).</p>
@@ -37,8 +38,18 @@
             <label for="searchUsuario">Buscar usuario (solo en este navegador)</label>
             <input id="searchUsuario" type="text">
           </div>
+=======
+        <div id="adminPanel" class="card" style="display:none;">
+          <h2>Usuarios registrados</h2>
+          <p class="intro">Datos obtenidos en vivo desde tu Google Sheet (todos los usuarios, de cualquier dispositivo).</p>
+>>>>>>> Stashed changes
           <div class="action-row">
-            <button class="button" id="searchButton" type="button">Buscar</button>
+            <button class="button" id="refrescarSheetButton" type="button">Actualizar</button>
+          </div>
+          <p id="sheetMensaje" class="small-text" aria-live="polite"></p>
+          <div class="form-group">
+            <label for="filtroUsuario">Filtrar por usuario</label>
+            <input id="filtroUsuario" type="text">
           </div>
           <div style="overflow-x:auto;">
             <table id="usersTable">
@@ -56,14 +67,121 @@
               <tbody></tbody>
             </table>
           </div>
+<<<<<<< Updated upstream
+          <div style="overflow-x:auto;">
+            <table id="usersTable">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Nombre</th>
+                  <th>Apellido</th>
+                  <th>Usuario</th>
+                  <th>Email</th>
+                  <th>Estado</th>
+                  <th>Municipio</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+=======
+>>>>>>> Stashed changes
           <div class="action-row">
             <button class="button button-danger" id="logoutLink" type="button">Cerrar sesión</button>
           </div>
+        </div>
+
+        <div id="preguntasPanel" class="card" style="display:none;">
+          <h2>Preguntas de la encuesta</h2>
+          <div class="action-row">
+            <button class="button" id="cargarPreguntasButton" type="button">Actualizar preguntas</button>
+          </div>
+          <p id="preguntasMensaje" class="small-text" aria-live="polite"></p>
+          <div style="overflow-x:auto;">
+            <table id="preguntasTable">
+              <thead>
+                <tr>
+                  <th>Sección</th>
+                  <th>Pregunta</th>
+                  <th>Activa</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <h3 id="formPreguntaTitulo">Agregar pregunta nueva</h3>
+          <div class="form-group">
+            <label for="preguntaSeccion">Sección</label>
+            <select id="preguntaSeccion">
+              <option value="gustos">Gustos e Intereses</option>
+              <option value="habilidades">Habilidades</option>
+              <option value="conocimientos">Conocimientos y Aptitudes</option>
+              <option value="valores">Valores Laborales</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="preguntaTexto">Pregunta</label>
+            <input id="preguntaTexto" type="text">
+          </div>
+
+          <div class="form-group">
+            <label for="opcionATexto">Opción A</label>
+            <input id="opcionATexto" type="text">
+          </div>
+          <div class="form-group">
+            <label for="opcionACategoria">Categoría de la opción A (TEC, ING, ART, HUM, NEG, SAL, CIE o DER)</label>
+            <input id="opcionACategoria" type="text">
+          </div>
+
+          <div class="form-group">
+            <label for="opcionBTexto">Opción B</label>
+            <input id="opcionBTexto" type="text">
+          </div>
+          <div class="form-group">
+            <label for="opcionBCategoria">Categoría de la opción B</label>
+            <input id="opcionBCategoria" type="text">
+          </div>
+
+          <div class="form-group">
+            <label for="opcionCTexto">Opción C</label>
+            <input id="opcionCTexto" type="text">
+          </div>
+          <div class="form-group">
+            <label for="opcionCCategoria">Categoría de la opción C</label>
+            <input id="opcionCCategoria" type="text">
+          </div>
+
+          <div class="form-group">
+            <label for="opcionDTexto">Opción D</label>
+            <input id="opcionDTexto" type="text">
+          </div>
+          <div class="form-group">
+            <label for="opcionDCategoria">Categoría de la opción D</label>
+            <input id="opcionDCategoria" type="text">
+          </div>
+
+          <div class="form-group">
+            <label for="preguntaActiva">¿Activa en la encuesta?</label>
+            <select id="preguntaActiva">
+              <option value="si">Sí</option>
+              <option value="no">No</option>
+            </select>
+          </div>
+
+          <div class="action-row">
+            <button class="button" id="guardarPreguntaButton" type="button">Agregar pregunta</button>
+            <button class="button button-secondary" id="cancelarEdicionButton" type="button" style="display:none;">Cancelar edición</button>
+          </div>
+          <p id="guardarPreguntaMensaje" class="small-text"></p>
         </div>
       </div>
     </div>
 
     <script src="js/storage.js"></script>
+    <script src="js/sheets-config.js"></script>
     <script src="js/auth.js"></script>
+    <script src="js/admin-preguntas.js"></script>
   </body>
 </html>

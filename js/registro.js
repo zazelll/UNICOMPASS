@@ -1,15 +1,91 @@
-class BaseFormController {
-  constructor(api) {
-    this.api = api;
+// Llena el <select> de Estado y engancha el cambio en cascada hacia Municipio.
+function llenarEstadosYMunicipios(estadoSelect, municipioSelect) {
+  const catalogo = window.MEXICO_ESTADOS_MUNICIPIOS;
+
+  for (const estado in catalogo) {
+    const opcion = document.createElement('option');
+    opcion.value = estado;
+    opcion.textContent = estado;
+    estadoSelect.appendChild(opcion);
   }
 
-  setMessage(element, message, isError = false) {
-    if (!element) return;
-    element.textContent = message;
-    element.style.color = isError ? '#c0392b' : '#2f8c52';
+  estadoSelect.addEventListener('change', () => {
+    municipioSelect.innerHTML = '';
+
+    if (!estadoSelect.value) {
+      municipioSelect.disabled = true;
+      return;
+    }
+
+    municipioSelect.disabled = false;
+    catalogo[estadoSelect.value].forEach((municipio) => {
+      const opcion = document.createElement('option');
+      opcion.value = municipio;
+      opcion.textContent = municipio;
+      municipioSelect.appendChild(opcion);
+    });
+  });
+}
+
+function leerFormularioDeRegistro() {
+  return {
+    nombre: document.getElementById('registerNombre').value.trim(),
+    apellido: document.getElementById('registerApellido').value.trim(),
+    usuario: document.getElementById('registerUsuario').value.trim(),
+    contraseña: document.getElementById('registerPassword').value,
+    email: document.getElementById('registerEmail').value.trim(),
+    estado: document.getElementById('registerEstado').value,
+    municipio: document.getElementById('registerMunicipio').value
+  };
+}
+
+function datosDeRegistroSonValidos(datos) {
+  if (!datos.nombre || !datos.apellido || !datos.usuario || !datos.contraseña || !datos.email) {
+    return 'Completa todos los campos.';
+  }
+  if (!datos.estado || !datos.municipio) {
+    return 'Selecciona tu estado y municipio.';
+  }
+  if (!/^\d{8}$/.test(datos.contraseña)) {
+    return 'La contraseña debe tener exactamente 8 dígitos numéricos.';
+  }
+  return null;
+}
+
+async function registrarUsuarioClick() {
+  const api = window.UNICOMPASS;
+  const mensaje = document.getElementById('registerMensaje');
+  const datos = leerFormularioDeRegistro();
+
+  const error = datosDeRegistroSonValidos(datos);
+  if (error) {
+    mensaje.textContent = error;
+    return;
+  }
+
+  mensaje.textContent = 'Registrando...';
+
+  const respuesta = await api.registerUser(
+    datos.nombre,
+    datos.apellido,
+    datos.usuario,
+    datos.contraseña,
+    datos.email,
+    datos.estado,
+    datos.municipio
+  );
+
+  if (respuesta.ok) {
+    mensaje.textContent = 'Registro guardado. Inicia sesión.';
+    setTimeout(() => {
+      window.location.href = 'secion.html';
+    }, 1200);
+  } else {
+    mensaje.textContent = respuesta.error || 'No se pudo guardar el registro.';
   }
 }
 
+<<<<<<< Updated upstream
 // Pega aquí la URL que te dio Google al "Implementar" el Apps Script como Aplicación Web.
 // Ejemplo: 'https://script.google.com/macros/s/AKfycb.../exec'
 const GOOGLE_SHEET_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbxgq_DEN3ODP7ttexPo1tC_5nKYclCLGNbVfVjLce3pwIqIXtjvsi1SSgvyQ6YrROnz_w/exec';
@@ -211,12 +287,25 @@ class RegistrationController extends BaseFormController {
       this.setMessage(this.elements.registerMensaje, 'No se pudo guardar el registro. Intenta de nuevo.', true);
     }
   }
+=======
+function mostrarModalPrivacidad() {
+  const modal = document.getElementById('privacyModal');
+  modal.classList.add('is-open');
+  document.getElementById('privacyCheckbox').checked = false;
+}
+
+function ocultarModalPrivacidad() {
+  document.getElementById('privacyModal').classList.remove('is-open');
+>>>>>>> Stashed changes
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  const api = window.UNICOMPASS;
-  if (!api) return;
+  llenarEstadosYMunicipios(
+    document.getElementById('registerEstado'),
+    document.getElementById('registerMunicipio')
+  );
 
+<<<<<<< Updated upstream
   const elements = {
     registerNombre: document.getElementById('registerNombre'),
     registerApellido: document.getElementById('registerApellido'),
@@ -234,3 +323,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   new RegistrationController(api, elements);
 });
+=======
+  document.getElementById('registerButton').addEventListener('click', mostrarModalPrivacidad);
+
+  document.getElementById('acceptPrivacyButton').addEventListener('click', () => {
+    if (!document.getElementById('privacyCheckbox').checked) {
+      document.getElementById('registerMensaje').textContent = 'Debes aceptar los términos de privacidad.';
+      return;
+    }
+    ocultarModalPrivacidad();
+    registrarUsuarioClick();
+  });
+});
+>>>>>>> Stashed changes
