@@ -118,7 +118,7 @@ a:hover {
 .container {
   display: flex;
   gap: 20px;
-  max-width: 1400px;
+  max-width: 1100px;
   margin: 0 auto;
   align-items: flex-start;
   flex-wrap: wrap;
@@ -194,13 +194,6 @@ select {
   background-color: #f7fafc;
   font-size: 1rem;
   color: #102a43;
-  min-height: 48px;
-  appearance: auto;
-}
-
-select {
-  min-height: 48px;
-  line-height: 1.4;
 }
 
 textarea {
@@ -414,29 +407,9 @@ canvas {
 
 table {
   width: 100%;
-  min-width: 860px;
   border-collapse: collapse;
   margin-top: 14px;
   background-color: #ffffff;
-  font-size: 0.98rem;
-}
-
-th,
-td {
-  padding: 14px 16px;
-  text-align: left;
-  vertical-align: top;
-  white-space: nowrap;
-}
-
-th {
-  background-color: #f3f7fb;
-  color: #102a43;
-  font-size: 0.95rem;
-}
-
-tbody tr:nth-child(even) {
-  background-color: #f8fbfd;
 }
 
 th,
@@ -564,7 +537,6 @@ th {
 @media (max-width: 860px) {
   .container {
     flex-direction: column;
-    max-width: 100%;
   }
 
   .left-panel,
@@ -609,14 +581,10 @@ th {
     width: 100%;
   }
 
-  table {
-    min-width: 720px;
-  }
-
   th,
   td {
-    font-size: 0.95rem;
-    padding: 12px 14px;
+    font-size: 0.92rem;
+    padding: 10px 12px;
   }
 }
 
@@ -633,12 +601,6 @@ th {
   textarea,
   select {
     padding: 10px 12px;
-    font-size: 16px;
-    min-height: 52px;
-  }
-
-  select {
-    min-height: 52px;
   }
 
   iframe {
@@ -651,8 +613,4 @@ th {
   font-size: 0.92rem;
   font-weight: 700;
   margin-top: 4px;
-<<<<<<< Updated upstream
 }
-=======
-}
->>>>>>> Stashed changes

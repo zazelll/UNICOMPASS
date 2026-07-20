@@ -169,26 +169,15 @@
 
       const result = this.user.vocacionalResultado;
       const primary = this.api.CAREERS[result.categoriaPrincipal];
-<<<<<<< Updated upstream
-      const lugar = (this.user.lugarVive || this.user.lugar || '').trim();
-      const query = lugar ? `${primary.escuela} cerca de ${lugar}` : `${primary.escuela}`;
-=======
       const direccion = this.api.getDireccionCompleta ? this.api.getDireccionCompleta(this.user) : '';
       const query = direccion ? `${primary.escuela} cerca de ${direccion}` : `${primary.escuela}`;
->>>>>>> Stashed changes
 
       if (mapFrame) mapFrame.src = `https://www.google.com/maps?q=${encodeURIComponent(query)}&output=embed`;
       if (mapLink) mapLink.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
       if (mapHint) {
-<<<<<<< Updated upstream
-        mapHint.textContent = lugar
-          ? `Buscando "${primary.escuela}" cerca de "${lugar}".`
-          : `No registraste dónde vives, así que buscamos "${primary.escuela}" en general. Agrega tu ubicación en tu perfil para resultados más cercanos a ti.`;
-=======
         mapHint.textContent = direccion
           ? `Buscando "${primary.escuela}" cerca de "${direccion}".`
           : `No registraste tu dirección, así que buscamos "${primary.escuela}" en general. Agrega tu ubicación en tu perfil para resultados más cercanos a ti.`;
->>>>>>> Stashed changes
       }
     }
 
@@ -225,8 +214,4 @@
 
     new ResultsRenderer(api, elements).init();
   });
-<<<<<<< Updated upstream
 })();
-=======
-})();
->>>>>>> Stashed changes

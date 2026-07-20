@@ -103,8 +103,4 @@
     getSortedEntries,
     determinePrimarySecondary
   });
-<<<<<<< Updated upstream
 })();
-=======
-})();
->>>>>>> Stashed changes
