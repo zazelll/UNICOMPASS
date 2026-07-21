@@ -1,5 +1,5 @@
 (function () {
-  // Categorías vocacionales que alimentan tanto la encuesta como los resultados en Escuelas.
+  
   const CATEGORY_LABELS = {
     TEC: 'Tecnología e Informática',
     ING: 'Ingeniería',
@@ -22,7 +22,7 @@
     DER: '#334e68'
   };
 
-  // Por categoría: a qué escuela/carreras corresponde y por qué (se muestra en la sugerencia).
+  
   const CAREERS = {
     TEC: {
       escuela: 'Escuela de Ingeniería en Sistemas y Tecnología',
@@ -66,7 +66,7 @@
     }
   };
 
-  // Convierte un objeto {TEC: 4, ART: 2, ...} en una lista ordenada de mayor a menor.
+  
   function getSortedEntries(scores) {
     return Object.keys(scores)
       .map((code) => ({
@@ -78,7 +78,7 @@
       .sort((a, b) => b.value - a.value);
   }
 
-  // Decide categoría principal y, si hay empate cercano, una secundaria (perfil mixto).
+  
   function determinePrimarySecondary(scores) {
     const sorted = getSortedEntries(scores).filter((entry) => entry.value > 0);
     if (sorted.length === 0) return { primary: null, secondary: null };

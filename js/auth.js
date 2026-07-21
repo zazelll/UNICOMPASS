@@ -1,113 +1,158 @@
-// Se usa en secion.html (login de estudiante) y en admin.html (login de admin).
-// Ambas páginas comparten los mismos campos: loginUsuario, loginPassword, loginButton.
-
-document.addEventListener('DOMContentLoaded', () => {
-  const api = window.UNICOMPASS;
-  if (!api) return;
-
-  const loginUsuario = document.getElementById('loginUsuario');
-  const loginPassword = document.getElementById('loginPassword');
-  const loginButton = document.getElementById('loginButton');
-  const loginMensaje = document.getElementById('loginMensaje');
-
-  // Estos solo existen en admin.html
-  const adminPanel = document.getElementById('adminPanel');
-  const usersTable = document.getElementById('usersTable');
-  const filtroUsuario = document.getElementById('filtroUsuario');
-  const refrescarSheetButton = document.getElementById('refrescarSheetButton');
-  const sheetMensaje = document.getElementById('sheetMensaje');
-  const logoutLink = document.getElementById('logoutLink');
-
-  let registrosCargados = [];
-
-  function mostrarUsuariosEnTabla(usuarios) {
-    if (!usersTable) return;
-    const tbody = usersTable.querySelector('tbody');
-    tbody.innerHTML = '';
-
-    usuarios.forEach((usuario) => {
-      const fila = document.createElement('tr');
-      fila.innerHTML = `
-        <td>${usuario.Fecha || ''}</td>
-        <td>${usuario.Nombre || ''}</td>
-        <td>${usuario.Apellido || ''}</td>
-        <td>${usuario.Usuario || ''}</td>
-        <td>${usuario.Email || ''}</td>
-        <td>${usuario.Estado || ''}</td>
-        <td>${usuario.Municipio || ''}</td>
-      `;
-      tbody.appendChild(fila);
-    });
+class LoginPage extends PageBase {
+  constructor(api) {
+    super(api);
+    this.loginUsuario = null;
+    this.loginPassword = null;
+    this.loginButton = null;
+    this.loginMensaje = null;
+    this.adminPanel = null;
+    this.usersTable = null;
+    this.filtroUsuario = null;
+    this.refrescarSheetButton = null;
+    this.sheetMensaje = null;
+    this.logoutLink = null;
+    this.registrosCargados = [];
   }
 
-  async function cargarUsuariosDesdeSheets() {
-    if (sheetMensaje) sheetMensaje.textContent = 'Cargando...';
+  init() {
+    this.loadElements();
+    this.bindEvents();
+  }
 
-    const url = `${GOOGLE_SHEET_WEBAPP_URL}?token=${encodeURIComponent(ADMIN_TOKEN)}`;
+  loadElements() {
+    this.loginUsuario = this.get('loginUsuario');
+    this.loginPassword = this.get('loginPassword');
+    this.loginButton = this.get('loginButton');
+    this.loginMensaje = this.get('loginMensaje');
+    this.adminPanel = this.get('adminPanel');
+    this.usersTable = this.get('usersTable');
+    this.filtroUsuario = this.get('filtroUsuario');
+    this.refrescarSheetButton = this.get('refrescarSheetButton');
+    this.sheetMensaje = this.get('sheetMensaje');
+    this.logoutLink = this.get('logoutLink');
+  }
+
+  bindEvents() {
+    if (this.loginButton) {
+      this.loginButton.addEventListener('click', this.onLoginClick.bind(this));
+    }
+    if (this.refrescarSheetButton) {
+      this.refrescarSheetButton.addEventListener('click', this.cargarUsuariosDesdeSheets.bind(this));
+    }
+    if (this.filtroUsuario) {
+      this.filtroUsuario.addEventListener('input', this.onFilterInput.bind(this));
+    }
+    if (this.logoutLink) {
+      this.logoutLink.addEventListener('click', this.onLogoutClick.bind(this));
+    }
+  }
+
+  setMessage(text) {
+    if (this.loginMensaje) {
+      this.loginMensaje.textContent = text;
+    }
+  }
+
+  mostrarUsuariosEnTabla(usuarios) {
+    if (!this.usersTable) return;
+    const tbody = this.usersTable.querySelector('tbody');
+    if (!tbody) return;
+
+    tbody.innerHTML = '';
+
+    for (let i = 0; i < usuarios.length; i += 1) {
+      const usuario = usuarios[i];
+      const fila = document.createElement('tr');
+      fila.innerHTML =
+        '<td>' + (usuario.Fecha || '') + '</td>' +
+        '<td>' + (usuario.Nombre || '') + '</td>' +
+        '<td>' + (usuario.Apellido || '') + '</td>' +
+        '<td>' + (usuario.Usuario || '') + '</td>' +
+        '<td>' + (usuario.Email || '') + '</td>' +
+        '<td>' + (usuario.Estado || '') + '</td>' +
+        '<td>' + (usuario.Municipio || '') + '</td>';
+      tbody.appendChild(fila);
+    }
+  }
+
+  async cargarUsuariosDesdeSheets() {
+    if (this.sheetMensaje) {
+      this.sheetMensaje.textContent = 'Cargando...';
+    }
+
+    const url = GOOGLE_SHEET_WEBAPP_URL + '?token=' + encodeURIComponent(ADMIN_TOKEN);
     const respuesta = await fetch(url);
     const datos = await respuesta.json();
 
     if (!datos.ok) {
-      if (sheetMensaje) sheetMensaje.textContent = `Error: ${datos.error}`;
+      if (this.sheetMensaje) {
+        this.sheetMensaje.textContent = 'Error: ' + datos.error;
+      }
       return;
     }
 
-    registrosCargados = datos.registros;
-    mostrarUsuariosEnTabla(registrosCargados);
-    if (sheetMensaje) sheetMensaje.textContent = `${registrosCargados.length} usuario(s) encontrados.`;
+    this.registrosCargados = datos.registros || [];
+    this.mostrarUsuariosEnTabla(this.registrosCargados);
+
+    if (this.sheetMensaje) {
+      this.sheetMensaje.textContent = this.registrosCargados.length + ' usuario(s) encontrados.';
+    }
   }
 
-  if (loginButton) {
-    loginButton.addEventListener('click', async () => {
-      const usuario = loginUsuario.value.trim();
-      const contraseña = loginPassword.value;
-
-      if (!usuario || !contraseña) {
-        loginMensaje.textContent = 'Completa usuario y contraseña.';
-        return;
-      }
-
-      // Primero revisamos si es el admin (no necesita internet, es un valor fijo).
-      if (api.isAdmin(usuario, contraseña)) {
-        loginMensaje.textContent = 'Bienvenido admin.';
-        if (adminPanel) adminPanel.style.display = 'block';
-        const preguntasPanel = document.getElementById('preguntasPanel');
-        if (preguntasPanel) preguntasPanel.style.display = 'block';
-        cargarUsuariosDesdeSheets();
-        if (typeof cargarPreguntasAdmin === 'function') cargarPreguntasAdmin();
-        return;
-      }
-
-      // Si no es admin, revisamos contra los usuarios guardados en Google Sheets.
-      loginMensaje.textContent = 'Verificando...';
-      const respuesta = await api.loginUser(usuario, contraseña);
-
-      if (respuesta.ok) {
-        window.location.href = 'menu.html';
-      } else {
-        loginMensaje.textContent = respuesta.error || 'Usuario o contraseña incorrectos.';
-      }
+  onFilterInput() {
+    const texto = this.filtroUsuario ? this.filtroUsuario.value.trim().toLowerCase() : '';
+    const filtrados = this.registrosCargados.filter(function (u) {
+      return (u.Usuario || '').toLowerCase().indexOf(texto) !== -1;
     });
+    this.mostrarUsuariosEnTabla(filtrados);
   }
 
-  if (refrescarSheetButton) {
-    refrescarSheetButton.addEventListener('click', cargarUsuariosDesdeSheets);
+  onLogoutClick() {
+    this.api.clearCurrentUser();
+    window.location.reload();
   }
 
-  if (filtroUsuario) {
-    filtroUsuario.addEventListener('input', () => {
-      const texto = filtroUsuario.value.trim().toLowerCase();
-      const filtrados = registrosCargados.filter((u) =>
-        (u.Usuario || '').toLowerCase().includes(texto)
-      );
-      mostrarUsuariosEnTabla(filtrados);
-    });
-  }
+  async onLoginClick() {
+    if (!this.loginUsuario || !this.loginPassword || !this.loginMensaje) return;
 
-  if (logoutLink) {
-    logoutLink.addEventListener('click', () => {
-      api.clearCurrentUser();
-      window.location.reload();
-    });
+    const usuario = this.loginUsuario.value.trim();
+    const contraseña = this.loginPassword.value;
+
+    if (!usuario || !contraseña) {
+      this.setMessage('Completa usuario y contraseña.');
+      return;
+    }
+
+    if (this.api.isAdmin(usuario, contraseña)) {
+      this.setMessage('Bienvenido admin.');
+      if (this.adminPanel) {
+        this.adminPanel.style.display = 'block';
+      }
+      const preguntasPanel = this.get('preguntasPanel');
+      if (preguntasPanel) {
+        preguntasPanel.style.display = 'block';
+      }
+      this.cargarUsuariosDesdeSheets();
+      if (typeof cargarPreguntasAdmin === 'function') {
+        cargarPreguntasAdmin();
+      }
+      return;
+    }
+
+    this.setMessage('Verificando...');
+    const respuesta = await this.api.loginUser(usuario, contraseña);
+
+    if (respuesta.ok) {
+      this.redirect('menu.html');
+    } else {
+      this.setMessage(respuesta.error || 'Usuario o contraseña incorrectos.');
+    }
   }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  const api = window.UNICOMPASS;
+  if (!api) return;
+  const page = new LoginPage(api);
+  page.init();
 });

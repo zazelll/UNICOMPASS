@@ -1,150 +1,197 @@
-// Se usa solo en admin.html, después de que el admin inicia sesión.
-
-let preguntasCargadas = [];
-let filaEnEdicion = null; // null = estamos agregando una pregunta nueva
-
-function mostrarPreguntasEnTabla() {
-  const tbody = document.querySelector('#preguntasTable tbody');
-  if (!tbody) return;
-  tbody.innerHTML = '';
-
-  preguntasCargadas.forEach((pregunta) => {
-    const fila = document.createElement('tr');
-    fila.innerHTML = `
-      <td>${pregunta.section}</td>
-      <td>${pregunta.text}</td>
-      <td>${pregunta.activa ? 'Sí' : 'No'}</td>
-      <td>
-        <button class="button" onclick="editarPreguntaEnFormulario(${pregunta.fila})" type="button">Editar</button>
-        <button class="button button-danger" onclick="eliminarPreguntaClick(${pregunta.fila})" type="button">Eliminar</button>
-      </td>
-    `;
-    tbody.appendChild(fila);
-  });
-}
-
-async function cargarPreguntasAdmin() {
-  const mensaje = document.getElementById('preguntasMensaje');
-  if (mensaje) mensaje.textContent = 'Cargando...';
-
-  const url = `${GOOGLE_SHEET_WEBAPP_URL}?token=${encodeURIComponent(ADMIN_TOKEN)}&action=preguntasAdmin`;
-  const respuesta = await fetch(url);
-  const datos = await respuesta.json();
-
-  if (!datos.ok) {
-    if (mensaje) mensaje.textContent = `Error: ${datos.error}`;
-    return;
+class AdminPreguntasPage extends PageBase {
+  constructor(api) {
+    super(api);
+    this.api = api;
+    this.preguntasCargadas = [];
+    this.filaEnEdicion = null;
+    this.mensaje = null;
+    this.tbody = null;
+    this.cargarPreguntasButton = null;
+    this.guardarPreguntaButton = null;
+    this.cancelarEdicionButton = null;
   }
 
-  preguntasCargadas = datos.preguntas;
-  mostrarPreguntasEnTabla();
-  if (mensaje) mensaje.textContent = `${preguntasCargadas.length} pregunta(s) encontradas.`;
-}
+  init() {
+    this.mensaje = this.get('preguntasMensaje');
+    this.tbody = this.get('preguntasTable') ? this.get('preguntasTable').querySelector('tbody') : null;
+    this.cargarPreguntasButton = this.get('cargarPreguntasButton');
+    this.guardarPreguntaButton = this.get('guardarPreguntaButton');
+    this.cancelarEdicionButton = this.get('cancelarEdicionButton');
 
-function editarPreguntaEnFormulario(fila) {
-  const pregunta = preguntasCargadas.find((p) => p.fila === fila);
-  if (!pregunta) return;
-
-  filaEnEdicion = fila;
-
-  document.getElementById('preguntaSeccion').value = pregunta.section;
-  document.getElementById('preguntaTexto').value = pregunta.text;
-  document.getElementById('preguntaActiva').value = pregunta.activa ? 'si' : 'no';
-
-  const letras = ['A', 'B', 'C', 'D'];
-  letras.forEach((letra, i) => {
-    const opcion = pregunta.options[i];
-    document.getElementById('opcion' + letra + 'Texto').value = opcion ? opcion.text : '';
-    document.getElementById('opcion' + letra + 'Categoria').value = opcion ? opcion.cats.join(',') : '';
-  });
-
-  document.getElementById('formPreguntaTitulo').textContent = 'Editando pregunta';
-  document.getElementById('guardarPreguntaButton').textContent = 'Guardar cambios';
-  document.getElementById('cancelarEdicionButton').style.display = 'inline-flex';
-}
-
-function cancelarEdicionPregunta() {
-  filaEnEdicion = null;
-  document.getElementById('preguntaTexto').value = '';
-  ['A', 'B', 'C', 'D'].forEach((letra) => {
-    document.getElementById('opcion' + letra + 'Texto').value = '';
-    document.getElementById('opcion' + letra + 'Categoria').value = '';
-  });
-  document.getElementById('preguntaActiva').value = 'si';
-  document.getElementById('formPreguntaTitulo').textContent = 'Agregar pregunta nueva';
-  document.getElementById('guardarPreguntaButton').textContent = 'Agregar pregunta';
-  document.getElementById('cancelarEdicionButton').style.display = 'none';
-}
-
-function datosDelFormularioPregunta() {
-  return {
-    token: ADMIN_TOKEN,
-    fila: filaEnEdicion,
-    seccion: document.getElementById('preguntaSeccion').value,
-    pregunta: document.getElementById('preguntaTexto').value.trim(),
-    activa: document.getElementById('preguntaActiva').value === 'si',
-    opcionA: document.getElementById('opcionATexto').value.trim(),
-    categoriaA: document.getElementById('opcionACategoria').value.trim(),
-    opcionB: document.getElementById('opcionBTexto').value.trim(),
-    categoriaB: document.getElementById('opcionBCategoria').value.trim(),
-    opcionC: document.getElementById('opcionCTexto').value.trim(),
-    categoriaC: document.getElementById('opcionCCategoria').value.trim(),
-    opcionD: document.getElementById('opcionDTexto').value.trim(),
-    categoriaD: document.getElementById('opcionDCategoria').value.trim()
-  };
-}
-
-async function guardarPreguntaClick() {
-  const mensaje = document.getElementById('guardarPreguntaMensaje');
-  const datos = datosDelFormularioPregunta();
-
-  if (!datos.pregunta || !datos.opcionA || !datos.opcionB || !datos.opcionC || !datos.opcionD) {
-    mensaje.textContent = 'Completa la pregunta y las 4 opciones.';
-    return;
+    if (this.cargarPreguntasButton) {
+      this.cargarPreguntasButton.addEventListener('click', this.cargarPreguntasAdmin.bind(this));
+    }
+    if (this.guardarPreguntaButton) {
+      this.guardarPreguntaButton.addEventListener('click', this.guardarPreguntaClick.bind(this));
+    }
+    if (this.cancelarEdicionButton) {
+      this.cancelarEdicionButton.addEventListener('click', this.cancelarEdicionPregunta.bind(this));
+    }
   }
 
-  datos.accion = filaEnEdicion ? 'editarPregunta' : 'agregarPregunta';
+  setMensaje(text) {
+    if (this.mensaje) {
+      this.mensaje.textContent = text;
+    }
+  }
 
-  const respuesta = await fetch(GOOGLE_SHEET_WEBAPP_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-    body: JSON.stringify(datos)
-  });
-  const resultado = await respuesta.json();
+  mostrarPreguntasEnTabla() {
+    if (!this.tbody) return;
+    this.tbody.innerHTML = '';
 
-  if (resultado.ok) {
-    mensaje.textContent = 'Guardado correctamente.';
-    cancelarEdicionPregunta();
-    cargarPreguntasAdmin();
-  } else {
-    mensaje.textContent = `Error: ${resultado.error}`;
+    for (var i = 0; i < this.preguntasCargadas.length; i += 1) {
+      var pregunta = this.preguntasCargadas[i];
+      var fila = document.createElement('tr');
+      var sectionCell = document.createElement('td');
+      sectionCell.textContent = pregunta.section;
+      var textCell = document.createElement('td');
+      textCell.textContent = pregunta.text;
+      var activeCell = document.createElement('td');
+      activeCell.textContent = pregunta.activa ? 'Sí' : 'No';
+      var actionsCell = document.createElement('td');
+
+      var editarButton = document.createElement('button');
+      editarButton.type = 'button';
+      editarButton.className = 'button';
+      editarButton.textContent = 'Editar';
+      editarButton.addEventListener('click', this.editarPreguntaEnFormulario.bind(this, pregunta.fila));
+
+      var eliminarButton = document.createElement('button');
+      eliminarButton.type = 'button';
+      eliminarButton.className = 'button button-danger';
+      eliminarButton.textContent = 'Eliminar';
+      eliminarButton.addEventListener('click', this.eliminarPreguntaClick.bind(this, pregunta.fila));
+
+      actionsCell.appendChild(editarButton);
+      actionsCell.appendChild(eliminarButton);
+      fila.appendChild(sectionCell);
+      fila.appendChild(textCell);
+      fila.appendChild(activeCell);
+      fila.appendChild(actionsCell);
+      this.tbody.appendChild(fila);
+    }
+  }
+
+  async cargarPreguntasAdmin() {
+    this.setMensaje('Cargando...');
+    var url = GOOGLE_SHEET_WEBAPP_URL + '?token=' + encodeURIComponent(ADMIN_TOKEN) + '&action=preguntasAdmin';
+    var respuesta = await fetch(url);
+    var datos = await respuesta.json();
+
+    if (!datos.ok) {
+      this.setMensaje('Error: ' + datos.error);
+      return;
+    }
+
+    this.preguntasCargadas = datos.preguntas || [];
+    this.mostrarPreguntasEnTabla();
+    this.setMensaje(this.preguntasCargadas.length + ' pregunta(s) encontradas.');
+  }
+
+  editarPreguntaEnFormulario(fila) {
+    var pregunta = null;
+    for (var i = 0; i < this.preguntasCargadas.length; i += 1) {
+      if (this.preguntasCargadas[i].fila === fila) {
+        pregunta = this.preguntasCargadas[i];
+        break;
+      }
+    }
+    if (!pregunta) return;
+
+    this.filaEnEdicion = fila;
+    this.get('preguntaSeccion').value = pregunta.section;
+    this.get('preguntaTexto').value = pregunta.text;
+    this.get('preguntaActiva').value = pregunta.activa ? 'si' : 'no';
+
+    var letras = ['A', 'B', 'C', 'D'];
+    for (var j = 0; j < letras.length; j += 1) {
+      var letra = letras[j];
+      var opcion = pregunta.options[j] || { text: '', cats: [] };
+      this.get('opcion' + letra + 'Texto').value = opcion.text || '';
+      this.get('opcion' + letra + 'Categoria').value = opcion.cats.join(',');
+    }
+
+    this.get('formPreguntaTitulo').textContent = 'Editando pregunta';
+    this.get('guardarPreguntaButton').textContent = 'Guardar cambios';
+    this.get('cancelarEdicionButton').style.display = 'inline-flex';
+  }
+
+  cancelarEdicionPregunta() {
+    this.filaEnEdicion = null;
+    this.get('preguntaTexto').value = '';
+    var letras = ['A', 'B', 'C', 'D'];
+    for (var i = 0; i < letras.length; i += 1) {
+      this.get('opcion' + letras[i] + 'Texto').value = '';
+      this.get('opcion' + letras[i] + 'Categoria').value = '';
+    }
+    this.get('preguntaActiva').value = 'si';
+    this.get('formPreguntaTitulo').textContent = 'Agregar pregunta nueva';
+    this.get('guardarPreguntaButton').textContent = 'Agregar pregunta';
+    this.get('cancelarEdicionButton').style.display = 'none';
+  }
+
+  datosDelFormularioPregunta() {
+    return {
+      token: ADMIN_TOKEN,
+      fila: this.filaEnEdicion,
+      seccion: this.get('preguntaSeccion').value,
+      pregunta: this.get('preguntaTexto').value.trim(),
+      activa: this.get('preguntaActiva').value === 'si',
+      opcionA: this.get('opcionATexto').value.trim(),
+      categoriaA: this.get('opcionACategoria').value.trim(),
+      opcionB: this.get('opcionBTexto').value.trim(),
+      categoriaB: this.get('opcionBCategoria').value.trim(),
+      opcionC: this.get('opcionCTexto').value.trim(),
+      categoriaC: this.get('opcionCCategoria').value.trim(),
+      opcionD: this.get('opcionDTexto').value.trim(),
+      categoriaD: this.get('opcionDCategoria').value.trim()
+    };
+  }
+
+  async guardarPreguntaClick() {
+    var datos = this.datosDelFormularioPregunta();
+    if (!datos.pregunta || !datos.opcionA || !datos.opcionB || !datos.opcionC || !datos.opcionD) {
+      this.setMensaje('Completa la pregunta y las 4 opciones.');
+      return;
+    }
+
+    datos.accion = this.filaEnEdicion ? 'editarPregunta' : 'agregarPregunta';
+    var respuesta = await fetch(GOOGLE_SHEET_WEBAPP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(datos)
+    });
+    var resultado = await respuesta.json();
+
+    if (resultado.ok) {
+      this.setMensaje('Guardado correctamente.');
+      this.cancelarEdicionPregunta();
+      this.cargarPreguntasAdmin();
+    } else {
+      this.setMensaje('Error: ' + resultado.error);
+    }
+  }
+
+  async eliminarPreguntaClick(fila) {
+    var confirmar = confirm('¿Seguro que quieres eliminar esta pregunta?');
+    if (!confirmar) return;
+
+    var respuesta = await fetch(GOOGLE_SHEET_WEBAPP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ accion: 'eliminarPregunta', token: ADMIN_TOKEN, fila: fila })
+    });
+    var resultado = await respuesta.json();
+
+    if (resultado.ok) {
+      this.cargarPreguntasAdmin();
+    } else {
+      alert('Error: ' + resultado.error);
+    }
   }
 }
 
-async function eliminarPreguntaClick(fila) {
-  const confirmar = confirm('¿Seguro que quieres eliminar esta pregunta?');
-  if (!confirmar) return;
-
-  const respuesta = await fetch(GOOGLE_SHEET_WEBAPP_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-    body: JSON.stringify({ accion: 'eliminarPregunta', token: ADMIN_TOKEN, fila })
-  });
-  const resultado = await respuesta.json();
-
-  if (resultado.ok) {
-    cargarPreguntasAdmin();
-  } else {
-    alert('Error: ' + resultado.error);
-  }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  const cargarPreguntasButton = document.getElementById('cargarPreguntasButton');
-  const guardarPreguntaButton = document.getElementById('guardarPreguntaButton');
-  const cancelarEdicionButton = document.getElementById('cancelarEdicionButton');
-
-  if (cargarPreguntasButton) cargarPreguntasButton.addEventListener('click', cargarPreguntasAdmin);
-  if (guardarPreguntaButton) guardarPreguntaButton.addEventListener('click', guardarPreguntaClick);
-  if (cancelarEdicionButton) cancelarEdicionButton.addEventListener('click', cancelarEdicionPregunta);
+document.addEventListener('DOMContentLoaded', function () {
+  var page = new AdminPreguntasPage(window.UNICOMPASS);
+  page.init();
 });

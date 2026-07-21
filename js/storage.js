@@ -1,32 +1,53 @@
-// Guarda y lee al usuario que tiene la sesión abierta en este navegador.
-class Sesion {
-  guardarUsuarioActual(usuario) {
-    localStorage.setItem('usuario_actual', JSON.stringify(usuario));
+
+class BaseStorage {
+  setJson(key, value) {
+    localStorage.setItem(key, JSON.stringify(value));
   }
 
-  getCurrentUser() {
-    const guardado = localStorage.getItem('usuario_actual');
-    return guardado ? JSON.parse(guardado) : null;
+  getJson(key) {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+    return JSON.parse(raw);
   }
 
-  clearCurrentUser() {
-    localStorage.removeItem('usuario_actual');
+  removeKey(key) {
+    localStorage.removeItem(key);
   }
 }
 
-// Hereda de Sesion y le agrega todo lo que habla con Google Sheets
-// (registrar, iniciar sesión, editar perfil).
+class Sesion extends BaseStorage {
+  guardarUsuarioActual(usuario) {
+    this.setJson('usuario_actual', usuario);
+  }
+
+  getCurrentUser() {
+    return this.getJson('usuario_actual');
+  }
+
+  clearCurrentUser() {
+    this.removeKey('usuario_actual');
+  }
+}
+
 class Autenticacion extends Sesion {
   async registerUser(nombre, apellido, usuario, contraseña, email, estado, municipio) {
-    const respuesta = await enviarAccionAGoogleSheets({
+    const datos = {
       accion: 'registrar',
-      nombre, apellido, usuario, contraseña, email, estado, municipio
-    });
-    return respuesta;
+      nombre: nombre,
+      apellido: apellido,
+      usuario: usuario,
+      contraseña: contraseña,
+      email: email,
+      estado: estado,
+      municipio: municipio
+    };
+    return await enviarAccionAGoogleSheets(datos);
   }
 
   async loginUser(usuario, contraseña) {
-    const respuesta = await enviarAccionAGoogleSheets({ accion: 'login', usuario, contraseña });
+    const datos = { accion: 'login', usuario: usuario, contraseña: contraseña };
+    const respuesta = await enviarAccionAGoogleSheets(datos);
+
     if (respuesta.ok) {
       this.guardarUsuarioActual(respuesta.usuario);
     }
@@ -34,34 +55,91 @@ class Autenticacion extends Sesion {
   }
 
   async updateUser(usuarioOriginal, datosNuevos) {
-    const respuesta = await enviarAccionAGoogleSheets({
+    const datos = {
       accion: 'editarPerfil',
-      usuarioOriginal,
-      ...datosNuevos
-    });
+      usuarioOriginal: usuarioOriginal,
+      nombre: datosNuevos.nombre,
+      apellido: datosNuevos.apellido,
+      email: datosNuevos.email,
+      estado: datosNuevos.estado,
+      municipio: datosNuevos.municipio,
+      vocacionalResultado: datosNuevos.vocacionalResultado,
+      comentario: datosNuevos.comentario
+    };
+
+    const respuesta = await enviarAccionAGoogleSheets(datos);
 
     if (respuesta.ok) {
       const usuarioActual = this.getCurrentUser();
-      this.guardarUsuarioActual({ ...usuarioActual, ...datosNuevos });
+      Object.assign(usuarioActual, datosNuevos);
+      this.guardarUsuarioActual(usuarioActual);
     }
 
     return respuesta.ok;
   }
 
   isAdmin(usuario, contraseña) {
-    return usuario === 'aza' && contraseña === '123';
+    return usuario === 'admin' && contraseña === '123';
   }
 
-  // Junta estado y municipio en un solo texto, para mostrar y para el mapa.
   getDireccionCompleta(usuario) {
     if (!usuario) return '';
-    const partes = [usuario.municipio, usuario.estado].filter(Boolean);
+    const partes = [];
+    if (usuario.municipio) partes.push(usuario.municipio);
+    if (usuario.estado) partes.push(usuario.estado);
     return partes.join(', ');
   }
 }
 
-// Manda cualquier "accion" a tu Apps Script y regresa la respuesta como objeto.
-// Content-Type: text/plain evita que el navegador bloquee la petición por CORS.
+class PageBase {
+  constructor(api) {
+    this.api = api;
+  }
+
+  get(id) {
+    return document.getElementById(id);
+  }
+
+  setText(id, text) {
+    const element = this.get(id);
+    if (element) {
+      element.textContent = text;
+    }
+  }
+
+  setHtml(id, html) {
+    const element = this.get(id);
+    if (element) {
+      element.innerHTML = html;
+    }
+  }
+
+  show(id) {
+    const element = this.get(id);
+    if (element) {
+      element.style.display = 'block';
+    }
+  }
+
+  hide(id) {
+    const element = this.get(id);
+    if (element) {
+      element.style.display = 'none';
+    }
+  }
+
+  onClick(id, handler) {
+    const element = this.get(id);
+    if (element) {
+      element.addEventListener('click', handler);
+    }
+  }
+
+  redirect(url) {
+    window.location.href = url;
+  }
+}
+
 async function enviarAccionAGoogleSheets(datos) {
   try {
     const respuesta = await fetch(GOOGLE_SHEET_WEBAPP_URL, {
@@ -77,14 +155,4 @@ async function enviarAccionAGoogleSheets(datos) {
 }
 
 const autenticacion = new Autenticacion();
-
-window.UNICOMPASS = window.UNICOMPASS || {};
-Object.assign(window.UNICOMPASS, {
-  getCurrentUser: () => autenticacion.getCurrentUser(),
-  clearCurrentUser: () => autenticacion.clearCurrentUser(),
-  registerUser: (...args) => autenticacion.registerUser(...args),
-  loginUser: (...args) => autenticacion.loginUser(...args),
-  updateUser: (...args) => autenticacion.updateUser(...args),
-  isAdmin: (...args) => autenticacion.isAdmin(...args),
-  getDireccionCompleta: (usuario) => autenticacion.getDireccionCompleta(usuario)
-});
+window.UNICOMPASS = autenticacion;

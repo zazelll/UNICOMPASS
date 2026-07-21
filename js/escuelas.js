@@ -1,217 +1,300 @@
-(function () {
-  class ResultsRenderer {
-    constructor(api, elements) {
-      this.api = api;
-      this.elements = elements;
-      this.user = api.getCurrentUser();
-    }
+class Grafica {
+  constructor(canvas) {
+    this.canvas = canvas;
+  }
 
-    hasResult() {
-      return !!(this.user && this.user.vocacionalResultado && this.user.vocacionalResultado.categoriaPrincipal);
-    }
+  limpiarCanvas() {
+    var ctx = this.canvas.getContext('2d');
+    ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    return ctx;
+  }
 
-    renderEmptyState() {
-      const { suggestionBox, statsCanvas, skillsCanvas, mapHint, mapPanelCard } = this.elements;
+  dibujar(entradas) {
+    // Se implementa en las subclases.
+  }
+}
 
-      if (suggestionBox) {
-        suggestionBox.innerHTML = `
-          <h3>Aún no tienes resultados</h3>
-          <p>Completa la encuesta vocacional para que podamos sugerirte una carrera y las escuelas más cercanas a ti.</p>
-          <p><a class="button" href="vocacional.html">Ir a la encuesta</a></p>
-        `;
+class GraficaDeBarras extends Grafica {
+  dibujar(entradas) {
+    if (!this.canvas) return;
+    var ctx = this.limpiarCanvas();
+    var width = this.canvas.width;
+    var height = this.canvas.height;
+    var padding = 40;
+    var chartHeight = height - padding * 2;
+    var maxValue = 1;
+    for (var i = 0; i < entradas.length; i += 1) {
+      if (entradas[i].value > maxValue) {
+        maxValue = entradas[i].value;
       }
-
-      [statsCanvas, skillsCanvas].forEach((canvas) => {
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#f7fafc';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#52606d';
-        ctx.font = '14px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('Completa la encuesta para ver esta gráfica', canvas.width / 2, canvas.height / 2);
-      });
-
-      if (mapPanelCard) mapPanelCard.style.display = 'none';
-      if (mapHint) mapHint.textContent = '';
     }
 
-    renderSuggestion() {
-      const { suggestionBox } = this.elements;
-      if (!suggestionBox) return;
-
-      const result = this.user.vocacionalResultado;
-      const primary = this.api.CAREERS[result.categoriaPrincipal];
-      const secondary = result.categoriaSecundaria ? this.api.CAREERS[result.categoriaSecundaria] : null;
-
-      let comparacionHtml = '';
-      if (result.carreraDeseada) {
-        const declarada = result.carreraDeseada.toLowerCase();
-        const coincide = primary.carreras.some((c) => c.toLowerCase().includes(declarada) || declarada.includes(c.toLowerCase()));
-        comparacionHtml = coincide
-          ? `<p class="small-text" style="color:#2f8c52;">¡Tu resultado coincide con la carrera que ya tenías en mente: <strong>${result.carreraDeseada}</strong>!</p>`
-          : `<p class="small-text">Nos dijiste que te interesa <strong>${result.carreraDeseada}</strong>. Tu encuesta apunta más hacia el área de abajo, pero ambas opciones pueden convivir, ¡explóralas!</p>`;
-      }
-
-      const secondaryHtml = secondary
-        ? `<p><strong>También muestras afinidad con:</strong> ${this.api.CATEGORY_LABELS[result.categoriaSecundaria]} (${secondary.carreras.join(', ')})</p>`
-        : '';
-
-      suggestionBox.innerHTML = `
-        <h3>${primary.escuela}</h3>
-        <p><strong>Carreras sugeridas:</strong> ${primary.carreras.join(', ')}</p>
-        <p><strong>Motivo:</strong> ${primary.motivo}</p>
-        ${secondaryHtml}
-        ${comparacionHtml}
-      `;
+    var barSlot = (width - padding * 2) / entradas.length;
+    var barWidth = barSlot * 0.6;
+    if (barWidth > 50) {
+      barWidth = 50;
     }
 
-    drawBarChart(canvas, entries) {
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      const width = canvas.width;
-      const height = canvas.height;
-      const padding = 40;
-      const chartHeight = height - padding * 2;
-      const maxValue = Math.max(...entries.map((e) => e.value), 1);
-      const barSlot = (width - padding * 2) / entries.length;
-      const barWidth = Math.min(50, barSlot * 0.6);
+    ctx.strokeStyle = '#d8dde3';
+    ctx.beginPath();
+    ctx.moveTo(padding, padding);
+    ctx.lineTo(padding, height - padding);
+    ctx.lineTo(width - padding, height - padding);
+    ctx.stroke();
 
-      ctx.clearRect(0, 0, width, height);
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, width, height);
+    for (var i = 0; i < entradas.length; i += 1) {
+      var entrada = entradas[i];
+      var barHeight = (entrada.value / maxValue) * (chartHeight - 20);
+      var x = padding + barSlot * i + (barSlot - barWidth) / 2;
+      var y = height - padding - barHeight;
 
-      ctx.strokeStyle = '#d8dde3';
-      ctx.beginPath();
-      ctx.moveTo(padding, padding);
-      ctx.lineTo(padding, height - padding);
-      ctx.lineTo(width - padding, height - padding);
-      ctx.stroke();
-
-      entries.forEach((entry, index) => {
-        const barHeight = (entry.value / maxValue) * (chartHeight - 20);
-        const x = padding + barSlot * index + (barSlot - barWidth) / 2;
-        const y = height - padding - barHeight;
-        ctx.fillStyle = entry.color;
-        ctx.fillRect(x, y, barWidth, barHeight);
-        ctx.fillStyle = '#102a43';
-        ctx.font = '11px sans-serif';
-        ctx.textAlign = 'center';
-        const shortLabel = entry.label.split(' ')[0];
-        ctx.fillText(shortLabel, x + barWidth / 2, height - 16);
-        ctx.fillText(entry.value, x + barWidth / 2, y - 8);
-      });
-    }
-
-    drawPieChart(canvas, entries, centerLabel) {
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      const centerX = canvas.width / 2;
-      const centerY = canvas.height / 2;
-      const radius = 90;
-      let startAngle = -0.5 * Math.PI;
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      const total = entries.reduce((sum, e) => sum + e.value, 0) || 1;
-
-      entries.forEach((entry) => {
-        const sliceAngle = (entry.value / total) * (2 * Math.PI);
-        ctx.beginPath();
-        ctx.moveTo(centerX, centerY);
-        ctx.arc(centerX, centerY, radius, startAngle, startAngle + sliceAngle);
-        ctx.closePath();
-        ctx.fillStyle = entry.color;
-        ctx.fill();
-        startAngle += sliceAngle;
-      });
+      ctx.fillStyle = entrada.color;
+      ctx.fillRect(x, y, barWidth, barHeight);
 
       ctx.fillStyle = '#102a43';
-      ctx.font = '13px sans-serif';
+      ctx.font = '11px sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(centerLabel, centerX, centerY);
+      var etiquetaCorta = entrada.label.split(' ')[0];
+      ctx.fillText(etiquetaCorta, x + barWidth / 2, height - 16);
+      ctx.fillText(entrada.value, x + barWidth / 2, y - 8);
+    }
+  }
+}
+
+class GraficaDePastel extends Grafica {
+  constructor(canvas, etiquetaCentral) {
+    super(canvas);
+    this.etiquetaCentral = etiquetaCentral;
+  }
+
+  dibujar(entradas) {
+    if (!this.canvas) return;
+    var ctx = this.limpiarCanvas();
+    var centerX = this.canvas.width / 2;
+    var centerY = this.canvas.height / 2;
+    var radio = 90;
+    var anguloInicial = -0.5 * Math.PI;
+    var total = 0;
+
+    for (var i = 0; i < entradas.length; i += 1) {
+      total += entradas[i].value;
+    }
+    if (total === 0) {
+      total = 1;
     }
 
-    renderLegend(container, entries) {
-      if (!container) return;
-      container.innerHTML = entries
-        .map(
-          (entry) => `
-          <span class="legend-item">
-            <span class="legend-dot" style="background:${entry.color}"></span>
-            ${entry.label}
-          </span>`
-        )
-        .join('');
+    for (var i = 0; i < entradas.length; i += 1) {
+      var entrada = entradas[i];
+      var anguloRebanada = (entrada.value / total) * (2 * Math.PI);
+      ctx.beginPath();
+      ctx.moveTo(centerX, centerY);
+      ctx.arc(centerX, centerY, radio, anguloInicial, anguloInicial + anguloRebanada);
+      ctx.closePath();
+      ctx.fillStyle = entrada.color;
+      ctx.fill();
+      anguloInicial += anguloRebanada;
     }
 
-    renderCharts() {
-      const result = this.user.vocacionalResultado;
+    ctx.fillStyle = '#102a43';
+    ctx.font = '13px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(this.etiquetaCentral, centerX, centerY);
+  }
+}
 
-      // Estadísticas = gustos + valores (lo que le gusta, lo que valora)
-      const estadisticasEntries = this.api.getSortedEntries(result.estadisticasScores).filter((e) => e.value > 0).slice(0, 5);
-      // Habilidades = habilidades + conocimientos (en qué es hábil / qué sabe)
-      const habilidadesEntries = this.api.getSortedEntries(result.habilidadesScores).filter((e) => e.value > 0).slice(0, 5);
+class PaginaEscuelas extends PageBase {
+  constructor(api) {
+    super(api);
+    this.api = api;
+    this.user = api.getCurrentUser();
+  }
 
-      this.drawBarChart(this.elements.statsCanvas, estadisticasEntries.length ? estadisticasEntries : [{ label: 'Sin datos', value: 1, color: '#d8dde3' }]);
-      this.drawPieChart(this.elements.skillsCanvas, habilidadesEntries.length ? habilidadesEntries : [{ label: 'Sin datos', value: 1, color: '#d8dde3' }], 'Habilidades');
+  tieneResultado() {
+    return !!(this.user && this.user.vocacionalResultado && this.user.vocacionalResultado.categoriaPrincipal);
+  }
 
-      this.renderLegend(this.elements.statsLegend, estadisticasEntries);
-      this.renderLegend(this.elements.skillsLegend, habilidadesEntries);
+  mostrarEstadoVacio() {
+    var suggestionBox = this.get('suggestionBox');
+    var statsCanvas = this.get('statsChart');
+    var skillsCanvas = this.get('skillsChart');
+    var mapHint = this.get('mapHint');
+    var mapPanelCard = this.get('mapPanelCard');
+
+    if (suggestionBox) {
+      suggestionBox.innerHTML =
+        '<h3>Aún no tienes resultados</h3>' +
+        '<p>Completa la encuesta vocacional para que podamos sugerirte una carrera y las escuelas más cercanas a ti.</p>' +
+        '<p><a class="button" href="vocacional.html">Ir a la encuesta</a></p>';
     }
 
-    renderMap() {
-      const { mapFrame, mapLink, mapHint, mapPanelCard } = this.elements;
-      if (!mapPanelCard) return;
-
-      const result = this.user.vocacionalResultado;
-      const primary = this.api.CAREERS[result.categoriaPrincipal];
-      const direccion = this.api.getDireccionCompleta ? this.api.getDireccionCompleta(this.user) : '';
-      const query = direccion ? `${primary.escuela} cerca de ${direccion}` : `${primary.escuela}`;
-
-      if (mapFrame) mapFrame.src = `https://www.google.com/maps?q=${encodeURIComponent(query)}&output=embed`;
-      if (mapLink) mapLink.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
-      if (mapHint) {
-        mapHint.textContent = direccion
-          ? `Buscando "${primary.escuela}" cerca de "${direccion}".`
-          : `No registraste tu dirección, así que buscamos "${primary.escuela}" en general. Agrega tu ubicación en tu perfil para resultados más cercanos a ti.`;
-      }
+    var canvases = [statsCanvas, skillsCanvas];
+    for (var i = 0; i < canvases.length; i += 1) {
+      var canvas = canvases[i];
+      if (!canvas) continue;
+      var ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#f7fafc';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#52606d';
+      ctx.font = '14px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Completa la encuesta para ver esta gráfica', canvas.width / 2, canvas.height / 2);
     }
 
-    init() {
-      if (!this.user) {
-        window.location.href = 'secion.html';
-        return;
-      }
-      if (!this.hasResult()) {
-        this.renderEmptyState();
-        return;
-      }
-      this.renderSuggestion();
-      this.renderCharts();
-      this.renderMap();
+    if (mapPanelCard) {
+      mapPanelCard.style.display = 'none';
+    }
+    if (mapHint) {
+      mapHint.textContent = '';
     }
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    const api = window.UNICOMPASS;
-    if (!api) return;
+  mostrarSugerencia() {
+    var suggestionBox = this.get('suggestionBox');
+    if (!suggestionBox) return;
 
-    const elements = {
-      suggestionBox: document.getElementById('suggestionBox'),
-      statsCanvas: document.getElementById('statsChart'),
-      skillsCanvas: document.getElementById('skillsChart'),
-      statsLegend: document.getElementById('statsLegend'),
-      skillsLegend: document.getElementById('skillsLegend'),
-      mapPanelCard: document.getElementById('mapPanelCard'),
-      mapFrame: document.getElementById('schoolMapFrame'),
-      mapLink: document.getElementById('mapLink'),
-      mapHint: document.getElementById('mapHint')
-    };
+    var resultado = this.user.vocacionalResultado;
+    var principal = this.api.CAREERS[resultado.categoriaPrincipal];
+    var secundaria = null;
+    if (resultado.categoriaSecundaria) {
+      secundaria = this.api.CAREERS[resultado.categoriaSecundaria];
+    }
 
-    new ResultsRenderer(api, elements).init();
-  });
-})();
+    var comparacionHtml = '';
+    if (resultado.carreraDeseada) {
+      var declarada = resultado.carreraDeseada.toLowerCase();
+      var coincide = false;
+      for (var i = 0; i < principal.carreras.length; i += 1) {
+        var carrera = principal.carreras[i];
+        var carreraLower = carrera.toLowerCase();
+        if (carreraLower.indexOf(declarada) !== -1 || declarada.indexOf(carreraLower) !== -1) {
+          coincide = true;
+          break;
+        }
+      }
+      if (coincide) {
+        comparacionHtml =
+          '<p class="small-text" style="color:#2f8c52;">¡Tu resultado coincide con la carrera que ya tenías en mente: <strong>' +
+          resultado.carreraDeseada +
+          '</strong>!</p>';
+      } else {
+        comparacionHtml =
+          '<p class="small-text">Nos dijiste que te interesa <strong>' +
+          resultado.carreraDeseada +
+          '</strong>. Tu encuesta apunta más hacia el área de abajo, pero ambas opciones pueden convivir, ¡explóralas!</p>';
+      }
+    }
+
+    var secundariaHtml = '';
+    if (secundaria) {
+      secundariaHtml =
+        '<p><strong>También muestras afinidad con:</strong> ' +
+        this.api.CATEGORY_LABELS[resultado.categoriaSecundaria] +
+        ' (' + secundaria.carreras.join(', ') + ')</p>';
+    }
+
+    suggestionBox.innerHTML =
+      '<h3>' + principal.escuela + '</h3>' +
+      '<p><strong>Carreras sugeridas:</strong> ' + principal.carreras.join(', ') + '</p>' +
+      '<p><strong>Motivo:</strong> ' + principal.motivo + '</p>' +
+      secundariaHtml +
+      comparacionHtml;
+  }
+
+  mostrarLeyenda(contenedor, entradas) {
+    if (!contenedor) return;
+    var html = '';
+    for (var i = 0; i < entradas.length; i += 1) {
+      var entrada = entradas[i];
+      html +=
+        '<span class="legend-item">' +
+        '<span class="legend-dot" style="background:' + entrada.color + '"></span>' +
+        entrada.label +
+        '</span>';
+    }
+    contenedor.innerHTML = html;
+  }
+
+  mostrarGraficas() {
+    var resultado = this.user.vocacionalResultado;
+    var entradasEstadisticas = this.api.getSortedEntries(resultado.estadisticasScores);
+    var estadisticasFiltradas = [];
+    for (var i = 0; i < entradasEstadisticas.length; i += 1) {
+      if (entradasEstadisticas[i].value > 0) {
+        estadisticasFiltradas.push(entradasEstadisticas[i]);
+      }
+    }
+    if (estadisticasFiltradas.length > 5) {
+      estadisticasFiltradas = estadisticasFiltradas.slice(0, 5);
+    }
+
+    var entradasHabilidades = this.api.getSortedEntries(resultado.habilidadesScores);
+    var habilidadesFiltradas = [];
+    for (var j = 0; j < entradasHabilidades.length; j += 1) {
+      if (entradasHabilidades[j].value > 0) {
+        habilidadesFiltradas.push(entradasHabilidades[j]);
+      }
+    }
+    if (habilidadesFiltradas.length > 5) {
+      habilidadesFiltradas = habilidadesFiltradas.slice(0, 5);
+    }
+
+    var sinDatos = [{ label: 'Sin datos', value: 1, color: '#d8dde3' }];
+    var graficaEstadisticas = new GraficaDeBarras(this.get('statsChart'));
+    graficaEstadisticas.dibujar(estadisticasFiltradas.length ? estadisticasFiltradas : sinDatos);
+    var graficaHabilidades = new GraficaDePastel(this.get('skillsChart'), 'Habilidades');
+    graficaHabilidades.dibujar(habilidadesFiltradas.length ? habilidadesFiltradas : sinDatos);
+    this.mostrarLeyenda(this.get('statsLegend'), estadisticasFiltradas);
+    this.mostrarLeyenda(this.get('skillsLegend'), habilidadesFiltradas);
+  }
+
+  mostrarMapa() {
+    var mapFrame = this.get('schoolMapFrame');
+    var mapLink = this.get('mapLink');
+    var mapHint = this.get('mapHint');
+    var mapPanelCard = this.get('mapPanelCard');
+    if (!mapPanelCard) return;
+
+    var resultado = this.user.vocacionalResultado;
+    var principal = this.api.CAREERS[resultado.categoriaPrincipal];
+    var direccion = this.api.getDireccionCompleta(this.user);
+    var query = direccion ? principal.escuela + ' cerca de ' + direccion : principal.escuela;
+
+    if (mapFrame) {
+      mapFrame.src = 'https://www.google.com/maps?q=' + encodeURIComponent(query) + '&output=embed';
+    }
+    if (mapLink) {
+      mapLink.href = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(query);
+    }
+    if (mapHint) {
+      if (direccion) {
+        mapHint.textContent = 'Buscando "' + principal.escuela + '" cerca de "' + direccion + '".';
+      } else {
+        mapHint.textContent = 'No registraste tu dirección, así que buscamos "' + principal.escuela + '" en general. Agrega tu ubicación en tu perfil para resultados más cercanos a ti.';
+      }
+    }
+  }
+
+  iniciar() {
+    if (!this.user) {
+      this.redirect('secion.html');
+      return;
+    }
+    if (!this.tieneResultado()) {
+      this.mostrarEstadoVacio();
+      return;
+    }
+    this.mostrarSugerencia();
+    this.mostrarGraficas();
+    this.mostrarMapa();
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  var api = window.UNICOMPASS;
+  if (!api) return;
+  var page = new PaginaEscuelas(api);
+  page.iniciar();
+});

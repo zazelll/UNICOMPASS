@@ -1,7 +1,5 @@
-// Llena el <select> de Estado y engancha el cambio en cascada hacia Municipio.
-// Además deja preseleccionado el estado/municipio que ya tenía el usuario.
 function llenarEstadosYMunicipiosParaEditar(estadoSelect, municipioSelect, estadoActual, municipioActual) {
-  const catalogo = window.MEXICO_ESTADOS_MUNICIPIOS;
+  const catalogo = window.MEXICO_ESTADOS_MUNICIPIOS || {};
 
   for (const estado in catalogo) {
     const opcion = document.createElement('option');
@@ -17,16 +15,22 @@ function llenarEstadosYMunicipiosParaEditar(estadoSelect, municipioSelect, estad
       return;
     }
     municipioSelect.disabled = false;
-    catalogo[estado].forEach((municipio) => {
+    const lista = catalogo[estado] || [];
+    for (let i = 0; i < lista.length; i += 1) {
+      const municipio = lista[i];
       const opcion = document.createElement('option');
       opcion.value = municipio;
       opcion.textContent = municipio;
-      if (municipio === municipioSeleccionado) opcion.selected = true;
+      if (municipio === municipioSeleccionado) {
+        opcion.selected = true;
+      }
       municipioSelect.appendChild(opcion);
-    });
+    }
   }
 
-  estadoSelect.addEventListener('change', () => llenarMunicipios(estadoSelect.value, ''));
+  estadoSelect.addEventListener('change', function () {
+    llenarMunicipios(estadoSelect.value, '');
+  });
 
   if (estadoActual) {
     estadoSelect.value = estadoActual;
@@ -34,77 +38,104 @@ function llenarEstadosYMunicipiosParaEditar(estadoSelect, municipioSelect, estad
   }
 }
 
-function mostrarDatosDelPerfil(usuario) {
-  const api = window.UNICOMPASS;
-  document.getElementById('nombreCompleto').textContent = `${usuario.nombre} ${usuario.apellido}`;
-  document.getElementById('usuarioActual').textContent = usuario.usuario;
-  document.getElementById('emailActual').textContent = usuario.email;
-  document.getElementById('estadoActual').textContent = usuario.estado;
-  document.getElementById('municipioActual').textContent = usuario.municipio;
+class PerfilPage extends PageBase {
+  constructor(api) {
+    super(api);
+    this.user = api.getCurrentUser();
+  }
+
+  init() {
+    if (!this.user) {
+      this.redirect('secion.html');
+      return;
+    }
+
+    if (this.get('nombreCompleto')) {
+      this.mostrarDatosDelPerfil();
+    }
+
+    const guardarButton = this.get('guardarButton');
+    if (guardarButton) {
+      this.llenarFormularioDeEdicion();
+      guardarButton.addEventListener('click', this.guardarCambiosDePerfil.bind(this));
+    }
+  }
+
+  mostrarDatosDelPerfil() {
+    this.setText('nombreCompleto', this.user.nombre + ' ' + this.user.apellido);
+    this.setText('usuarioActual', this.user.usuario);
+    this.setText('emailActual', this.user.email);
+    this.setText('estadoActual', this.user.estado);
+    this.setText('municipioActual', this.user.municipio);
+  }
+
+  llenarFormularioDeEdicion() {
+    const editNombre = this.get('editNombre');
+    const editApellido = this.get('editApellido');
+    const editUsuario = this.get('editUsuario');
+    const editEmail = this.get('editEmail');
+    const editEstado = this.get('editEstado');
+    const editMunicipio = this.get('editMunicipio');
+
+    if (editNombre) editNombre.value = this.user.nombre || '';
+    if (editApellido) editApellido.value = this.user.apellido || '';
+    if (editUsuario) editUsuario.value = this.user.usuario || '';
+    if (editEmail) editEmail.value = this.user.email || '';
+
+    if (editEstado && editMunicipio) {
+      llenarEstadosYMunicipiosParaEditar(
+        editEstado,
+        editMunicipio,
+        this.user.estado,
+        this.user.municipio
+      );
+    }
+  }
+
+  async guardarCambiosDePerfil() {
+    const mensaje = this.get('editMensaje');
+    const nombre = this.get('editNombre') ? this.get('editNombre').value.trim() : '';
+    const apellido = this.get('editApellido') ? this.get('editApellido').value.trim() : '';
+    const email = this.get('editEmail') ? this.get('editEmail').value.trim() : '';
+    const estado = this.get('editEstado') ? this.get('editEstado').value : '';
+    const municipio = this.get('editMunicipio') ? this.get('editMunicipio').value : '';
+
+    if (!nombre || !apellido) {
+      if (mensaje) {
+        mensaje.textContent = 'Nombre y apellido son requeridos.';
+      }
+      return;
+    }
+
+    if (mensaje) {
+      mensaje.textContent = 'Guardando...';
+    }
+
+    const guardado = await this.api.updateUser(this.user.usuario, {
+      nombre: nombre,
+      apellido: apellido,
+      email: email,
+      estado: estado,
+      municipio: municipio
+    });
+
+    if (mensaje) {
+      mensaje.textContent = guardado
+        ? 'Cambios guardados correctamente.'
+        : 'Error al guardar cambios.';
+    }
+
+    if (guardado) {
+      setTimeout(function () {
+        window.location.href = 'menu.html';
+      }, 1500);
+    }
+  }
 }
 
-function llenarFormularioDeEdicion(usuario) {
-  document.getElementById('editNombre').value = usuario.nombre;
-  document.getElementById('editApellido').value = usuario.apellido;
-  document.getElementById('editUsuario').value = usuario.usuario;
-  document.getElementById('editEmail').value = usuario.email;
-
-  llenarEstadosYMunicipiosParaEditar(
-    document.getElementById('editEstado'),
-    document.getElementById('editMunicipio'),
-    usuario.estado,
-    usuario.municipio
-  );
-}
-
-async function guardarCambiosDePerfil(usuarioOriginal) {
+document.addEventListener('DOMContentLoaded', function () {
   const api = window.UNICOMPASS;
-  const mensaje = document.getElementById('editMensaje');
-
-  const nuevosDatos = {
-    nombre: document.getElementById('editNombre').value.trim(),
-    apellido: document.getElementById('editApellido').value.trim(),
-    email: document.getElementById('editEmail').value.trim(),
-    estado: document.getElementById('editEstado').value,
-    municipio: document.getElementById('editMunicipio').value
-  };
-
-  if (!nuevosDatos.nombre || !nuevosDatos.apellido) {
-    mensaje.textContent = 'Nombre y apellido son requeridos.';
-    return;
-  }
-
-  mensaje.textContent = 'Guardando...';
-  const guardado = await api.updateUser(usuarioOriginal, nuevosDatos);
-
-  if (guardado) {
-    mensaje.textContent = 'Cambios guardados correctamente.';
-    setTimeout(() => {
-      window.location.href = 'menu.html';
-    }, 1500);
-  } else {
-    mensaje.textContent = 'Error al guardar cambios.';
-  }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  const api = window.UNICOMPASS;
-  const usuario = api.getCurrentUser();
-
-  if (!usuario) {
-    window.location.href = 'secion.html';
-    return;
-  }
-
-  // Página "usuario.html" (solo ver el perfil)
-  if (document.getElementById('nombreCompleto')) {
-    mostrarDatosDelPerfil(usuario);
-  }
-
-  // Página "editar_perfil.html" (editar el perfil)
-  const guardarButton = document.getElementById('guardarButton');
-  if (guardarButton) {
-    llenarFormularioDeEdicion(usuario);
-    guardarButton.addEventListener('click', () => guardarCambiosDePerfil(usuario.usuario));
-  }
+  if (!api) return;
+  const page = new PerfilPage(api);
+  page.init();
 });

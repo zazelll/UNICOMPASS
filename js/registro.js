@@ -1,114 +1,170 @@
-// Llena el <select> de Estado y engancha el cambio en cascada hacia Municipio.
-function llenarEstadosYMunicipios(estadoSelect, municipioSelect) {
-  const catalogo = window.MEXICO_ESTADOS_MUNICIPIOS;
-
-  for (const estado in catalogo) {
-    const opcion = document.createElement('option');
-    opcion.value = estado;
-    opcion.textContent = estado;
-    estadoSelect.appendChild(opcion);
+class RegistroPage extends PageBase {
+  constructor(api) {
+    super(api);
+    this.registerMensaje = null;
+    this.registerEstado = null;
+    this.registerMunicipio = null;
+    this.registerButton = null;
+    this.acceptPrivacyButton = null;
+    this.privacyCheckbox = null;
+    this.privacyModal = null;
   }
 
-  estadoSelect.addEventListener('change', () => {
-    municipioSelect.innerHTML = '';
+  init() {
+    this.loadElements();
+    this.fillEstados();
+    this.bindEvents();
+  }
 
-    if (!estadoSelect.value) {
-      municipioSelect.disabled = true;
+  loadElements() {
+    this.registerMensaje = this.get('registerMensaje');
+    this.registerEstado = this.get('registerEstado');
+    this.registerMunicipio = this.get('registerMunicipio');
+    this.registerButton = this.get('registerButton');
+    this.acceptPrivacyButton = this.get('acceptPrivacyButton');
+    this.privacyCheckbox = this.get('privacyCheckbox');
+    this.privacyModal = this.get('privacyModal');
+  }
+
+  bindEvents() {
+    if (this.registerButton) {
+      this.registerButton.addEventListener('click', this.showPrivacy.bind(this));
+    }
+    if (this.acceptPrivacyButton) {
+      this.acceptPrivacyButton.addEventListener('click', this.onAcceptPrivacy.bind(this));
+    }
+    if (this.registerEstado) {
+      this.registerEstado.addEventListener('change', this.fillMunicipios.bind(this));
+    }
+  }
+
+  fillEstados() {
+    if (!this.registerEstado || !this.registerMunicipio) return;
+    const catalogo = window.MEXICO_ESTADOS_MUNICIPIOS || {};
+
+    this.registerMunicipio.disabled = true;
+
+    for (const estado in catalogo) {
+      const opcion = document.createElement('option');
+      opcion.value = estado;
+      opcion.textContent = estado;
+      this.registerEstado.appendChild(opcion);
+    }
+  }
+
+  fillMunicipios() {
+    if (!this.registerEstado || !this.registerMunicipio) return;
+    const catalogo = window.MEXICO_ESTADOS_MUNICIPIOS || {};
+    const valor = this.registerEstado.value;
+
+    this.registerMunicipio.innerHTML = '';
+    if (!valor) {
+      this.registerMunicipio.disabled = true;
       return;
     }
 
-    municipioSelect.disabled = false;
-    catalogo[estadoSelect.value].forEach((municipio) => {
+    this.registerMunicipio.disabled = false;
+    const lista = catalogo[valor] || [];
+    for (let i = 0; i < lista.length; i += 1) {
+      const municipio = lista[i];
       const opcion = document.createElement('option');
       opcion.value = municipio;
       opcion.textContent = municipio;
-      municipioSelect.appendChild(opcion);
-    });
-  });
-}
-
-function leerFormularioDeRegistro() {
-  return {
-    nombre: document.getElementById('registerNombre').value.trim(),
-    apellido: document.getElementById('registerApellido').value.trim(),
-    usuario: document.getElementById('registerUsuario').value.trim(),
-    contraseña: document.getElementById('registerPassword').value,
-    email: document.getElementById('registerEmail').value.trim(),
-    estado: document.getElementById('registerEstado').value,
-    municipio: document.getElementById('registerMunicipio').value
-  };
-}
-
-function datosDeRegistroSonValidos(datos) {
-  if (!datos.nombre || !datos.apellido || !datos.usuario || !datos.contraseña || !datos.email) {
-    return 'Completa todos los campos.';
-  }
-  if (!datos.estado || !datos.municipio) {
-    return 'Selecciona tu estado y municipio.';
-  }
-  if (!/^\d{8}$/.test(datos.contraseña)) {
-    return 'La contraseña debe tener exactamente 8 dígitos numéricos.';
-  }
-  return null;
-}
-
-async function registrarUsuarioClick() {
-  const api = window.UNICOMPASS;
-  const mensaje = document.getElementById('registerMensaje');
-  const datos = leerFormularioDeRegistro();
-
-  const error = datosDeRegistroSonValidos(datos);
-  if (error) {
-    mensaje.textContent = error;
-    return;
+      this.registerMunicipio.appendChild(opcion);
+    }
   }
 
-  mensaje.textContent = 'Registrando...';
-
-  const respuesta = await api.registerUser(
-    datos.nombre,
-    datos.apellido,
-    datos.usuario,
-    datos.contraseña,
-    datos.email,
-    datos.estado,
-    datos.municipio
-  );
-
-  if (respuesta.ok) {
-    mensaje.textContent = 'Registro guardado. Inicia sesión.';
-    setTimeout(() => {
-      window.location.href = 'secion.html';
-    }, 1200);
-  } else {
-    mensaje.textContent = respuesta.error || 'No se pudo guardar el registro.';
+  readForm() {
+    return {
+      nombre: this.getValue('registerNombre'),
+      apellido: this.getValue('registerApellido'),
+      usuario: this.getValue('registerUsuario'),
+      contraseña: this.getValue('registerPassword'),
+      email: this.getValue('registerEmail'),
+      estado: this.getValue('registerEstado'),
+      municipio: this.getValue('registerMunicipio')
+    };
   }
-}
 
-function mostrarModalPrivacidad() {
-  const modal = document.getElementById('privacyModal');
-  modal.classList.add('is-open');
-  document.getElementById('privacyCheckbox').checked = false;
-}
+  getValue(id) {
+    const element = this.get(id);
+    if (!element) return '';
+    return element.value.trim();
+  }
 
-function ocultarModalPrivacidad() {
-  document.getElementById('privacyModal').classList.remove('is-open');
-}
+  validate(datos) {
+    if (!datos.nombre || !datos.apellido || !datos.usuario || !datos.contraseña || !datos.email) {
+      return 'Completa todos los campos.';
+    }
+    if (!datos.estado || !datos.municipio) {
+      return 'Selecciona tu estado y municipio.';
+    }
+    if (!/^\d{8}$/.test(datos.contraseña)) {
+      return 'La contraseña debe tener exactamente 8 dígitos numéricos.';
+    }
+    return null;
+  }
 
-document.addEventListener('DOMContentLoaded', () => {
-  llenarEstadosYMunicipios(
-    document.getElementById('registerEstado'),
-    document.getElementById('registerMunicipio')
-  );
+  showPrivacy() {
+    if (!this.privacyModal) return;
+    this.privacyModal.classList.add('is-open');
+    if (this.privacyCheckbox) {
+      this.privacyCheckbox.checked = false;
+    }
+  }
 
-  document.getElementById('registerButton').addEventListener('click', mostrarModalPrivacidad);
+  hidePrivacy() {
+    if (!this.privacyModal) return;
+    this.privacyModal.classList.remove('is-open');
+  }
 
-  document.getElementById('acceptPrivacyButton').addEventListener('click', () => {
-    if (!document.getElementById('privacyCheckbox').checked) {
-      document.getElementById('registerMensaje').textContent = 'Debes aceptar los términos de privacidad.';
+  showMessage(text) {
+    if (this.registerMensaje) {
+      this.registerMensaje.textContent = text;
+    }
+  }
+
+  async onAcceptPrivacy() {
+    if (!this.privacyCheckbox || !this.privacyCheckbox.checked) {
+      this.showMessage('Debes aceptar los términos de privacidad.');
       return;
     }
-    ocultarModalPrivacidad();
-    registrarUsuarioClick();
-  });
+
+    this.hidePrivacy();
+    await this.registerUsuario();
+  }
+
+  async registerUsuario() {
+    const datos = this.readForm();
+    const error = this.validate(datos);
+    if (error) {
+      this.showMessage(error);
+      return;
+    }
+
+    this.showMessage('Registrando...');
+    const respuesta = await this.api.registerUser(
+      datos.nombre,
+      datos.apellido,
+      datos.usuario,
+      datos.contraseña,
+      datos.email,
+      datos.estado,
+      datos.municipio
+    );
+
+    if (respuesta.ok) {
+      this.showMessage('Registro guardado. Inicia sesión.');
+      setTimeout(function () {
+        window.location.href = 'secion.html';
+      }, 1200);
+    } else {
+      this.showMessage(respuesta.error || 'No se pudo guardar el registro.');
+    }
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  const page = new RegistroPage(window.UNICOMPASS);
+  page.init();
 });
