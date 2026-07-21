@@ -167,7 +167,7 @@ class PaginaEscuelas extends PageBase {
       ctx.textAlign = 'center';
       ctx.fillText('Completa la encuesta para ver esta gráfica', canvas.width / 2, canvas.height / 2);
     }
-//
+//aqui es para 
     if (mapPanelCard) {
       mapPanelCard.style.display = 'none';
     }
