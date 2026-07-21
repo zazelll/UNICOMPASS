@@ -1,3 +1,7 @@
+//sirve para llenar los select de estados 
+// y municipios en el formulario de edición de perfil
+//para ver el catalogo completo de estados y municipios, 
+// ver el archivo js/estados-municipios.js
 function llenarEstadosYMunicipiosParaEditar(estadoSelect, municipioSelect, estadoActual, municipioActual) {
   const catalogo = window.MEXICO_ESTADOS_MUNICIPIOS || {};
 
@@ -27,7 +31,8 @@ function llenarEstadosYMunicipiosParaEditar(estadoSelect, municipioSelect, estad
       municipioSelect.appendChild(opcion);
     }
   }
-
+//sirve para llenar los municipios cuando se cambia el estado 
+// en el select
   estadoSelect.addEventListener('change', function () {
     llenarMunicipios(estadoSelect.value, '');
   });
@@ -37,6 +42,10 @@ function llenarEstadosYMunicipiosParaEditar(estadoSelect, municipioSelect, estad
     llenarMunicipios(estadoActual, municipioActual);
   }
 }
+//sirve perfilpage para mostrar los datos del perfil y 
+// permitir su edición
+//dice api para poder acceder a los datos del usuario actual 
+// y actualizar su perfil en el exel de gpoogle q es url de la api
 
 class PerfilPage extends PageBase {
   constructor(api) {
@@ -60,7 +69,7 @@ class PerfilPage extends PageBase {
       guardarButton.addEventListener('click', this.guardarCambiosDePerfil.bind(this));
     }
   }
-
+//sirve para mostrar los datos del perfil en la pagina de perfil
   mostrarDatosDelPerfil() {
     this.setText('nombreCompleto', this.user.nombre + ' ' + this.user.apellido);
     this.setText('usuarioActual', this.user.usuario);
@@ -68,7 +77,8 @@ class PerfilPage extends PageBase {
     this.setText('estadoActual', this.user.estado);
     this.setText('municipioActual', this.user.municipio);
   }
-
+//sirve para llenar el formulario de edición de perfil 
+// con los datos actuales del usuario
   llenarFormularioDeEdicion() {
     const editNombre = this.get('editNombre');
     const editApellido = this.get('editApellido');
@@ -91,7 +101,7 @@ class PerfilPage extends PageBase {
       );
     }
   }
-
+//sirve para guardar los cambios de perfil en el exel de google
   async guardarCambiosDePerfil() {
     const mensaje = this.get('editMensaje');
     const nombre = this.get('editNombre') ? this.get('editNombre').value.trim() : '';
@@ -132,7 +142,11 @@ class PerfilPage extends PageBase {
     }
   }
 }
-
+//sirve para inicializar la pagina de perfil cuando se carga el DOM
+//esto lo investige esta parte para que cuando se cargue la pagina 
+// de perfil, se inicialice la clase PerfilPage y se 
+// llame a su metodo init para mostrar los datos del perfil 
+// y permitir su edición
 document.addEventListener('DOMContentLoaded', function () {
   const api = window.UNICOMPASS;
   if (!api) return;

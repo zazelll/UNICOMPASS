@@ -1,8 +1,10 @@
+// este archivo contiene la lógica para mostrar la página de escuelas recomendadas 
+// según los resultados de la encuesta vocacional del usuario
 class Grafica {
   constructor(canvas) {
-    this.canvas = canvas;
+    this.canvas = canvas;//usa canva usdo n clase de ivan
   }
-
+//sirve para limpiar el canvas antes de dibujar la gráfica
   limpiarCanvas() {
     var ctx = this.canvas.getContext('2d');
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -12,10 +14,10 @@ class Grafica {
   }
 
   dibujar(entradas) {
-    // Se implementa en las subclases.
+    // Se implementa en las subclases -----.
   }
 }
-
+//sirve para dibujar una gráfica de barras en el canvas
 class GraficaDeBarras extends Grafica {
   dibujar(entradas) {
     if (!this.canvas) return;
@@ -30,26 +32,31 @@ class GraficaDeBarras extends Grafica {
         maxValue = entradas[i].value;
       }
     }
-
+//sirve para calcular el ancho de cada barra y el espacio entre ellas
     var barSlot = (width - padding * 2) / entradas.length;
     var barWidth = barSlot * 0.6;
     if (barWidth > 50) {
       barWidth = 50;
     }
-
+//aqui es para dibujar el eje Y y el eje X de la gráfica de barras
+//beginPath() es para iniciar un nuevo camino de dibujo, 
+// moveTo() es para mover el lápiz a una posición sin dibujar, 
+// lineTo() es para dibujar una línea desde la posición actual hasta la posición especificada, 
+// stroke() es para dibujar el camino definido con beginPath(), moveTo() y lineTo()
     ctx.strokeStyle = '#d8dde3';
     ctx.beginPath();
     ctx.moveTo(padding, padding);
     ctx.lineTo(padding, height - padding);
     ctx.lineTo(width - padding, height - padding);
     ctx.stroke();
-
+//sirve para dibujar las barras de la gráfica de barras y sus etiquetas
     for (var i = 0; i < entradas.length; i += 1) {
       var entrada = entradas[i];
       var barHeight = (entrada.value / maxValue) * (chartHeight - 20);
       var x = padding + barSlot * i + (barSlot - barWidth) / 2;
       var y = height - padding - barHeight;
-
+//aqui es para dibujar cada barra de la gráfica de barras con su color y su altura 
+// proporcional al valor de la entrada
       ctx.fillStyle = entrada.color;
       ctx.fillRect(x, y, barWidth, barHeight);
 
@@ -62,13 +69,13 @@ class GraficaDeBarras extends Grafica {
     }
   }
 }
-
+//sirve para dibujar una gráfica de pastel en el canvas
 class GraficaDePastel extends Grafica {
   constructor(canvas, etiquetaCentral) {
     super(canvas);
     this.etiquetaCentral = etiquetaCentral;
   }
-
+//sirve para dibujar la gráfica de pastel con las entradas proporcionadas
   dibujar(entradas) {
     if (!this.canvas) return;
     var ctx = this.limpiarCanvas();
@@ -84,7 +91,14 @@ class GraficaDePastel extends Grafica {
     if (total === 0) {
       total = 1;
     }
-
+//sirve para dibujar cada rebanada de la gráfica de pastel con su color y su 
+// ángulo proporcional al valor de la entrada
+//beginPath() es para iniciar un nuevo camino de dibujo, 
+// moveTo() es para mover el lápiz a una posición sin dibujar, 
+// arc() es para dibujar un arco o círculo desde la posición actual hasta la posición especificada,
+// closePath() es para cerrar el camino de dibujo, 
+// fillStyle es para establecer el color de relleno, 
+// fill() es para rellenar el camino definido con beginPath(), moveTo(), arc() y closePath()
     for (var i = 0; i < entradas.length; i += 1) {
       var entrada = entradas[i];
       var anguloRebanada = (entrada.value / total) * (2 * Math.PI);
@@ -103,7 +117,8 @@ class GraficaDePastel extends Grafica {
     ctx.fillText(this.etiquetaCentral, centerX, centerY);
   }
 }
-
+//aui es importante para mostrar la sugerencia de escuela y carrera 
+// según los resultados de la encuesta vocacional del usuario
 class PaginaEscuelas extends PageBase {
   constructor(api) {
     super(api);
@@ -114,21 +129,31 @@ class PaginaEscuelas extends PageBase {
   tieneResultado() {
     return !!(this.user && this.user.vocacionalResultado && this.user.vocacionalResultado.categoriaPrincipal);
   }
-
+//esto es para inicializar la página de escuelas cuando se carga el DOM
+//suggestionBox es para mostrar la sugerencia de escuela y carrera según los 
+// resultados de la encuesta vocacional del usuario
+//statsChart es para mostrar la gráfica de barras con las estadísticas del usuario
+//skillsChart es para mostrar la gráfica de pastel con las habilidades del usuario
+//schoolMapFrame es para mostrar el mapa de Google Maps con la ubicación del usuario 
+// y las escuelas recomendadas según su resultado de la encuesta vocacional
   mostrarEstadoVacio() {
     var suggestionBox = this.get('suggestionBox');
     var statsCanvas = this.get('statsChart');
     var skillsCanvas = this.get('skillsChart');
     var mapHint = this.get('mapHint');
     var mapPanelCard = this.get('mapPanelCard');
-
+//este es para mostrar un mensaje indicando que aún no se ha completado la encuesta vocacional 
+// y se sugiere completarla para obtener resultados y sugerencias de escuelas y carreras
     if (suggestionBox) {
       suggestionBox.innerHTML =
-        '<h3>Aún no tienes resultados</h3>' +
-        '<p>Completa la encuesta vocacional para que podamos sugerirte una carrera y las escuelas más cercanas a ti.</p>' +
+        '<h3>Aún no tienes resultados :(</h3>' +
+        '<p>Completa la encuesta vocacional para que podamos sugerirte una carrera y las escuelas más cercanas a ti. ve a contestar rapido!!!</p>' +
         '<p><a class="button" href="vocacional.html">Ir a la encuesta</a></p>';
     }
-
+//sirve para mostrar un mensaje indicando que aún no se ha completado la encuesta vocacional
+//esta parte salia muchos errores la manera q solucione fue poner un if para q si no hay 
+// encuesta no se muestre el mensaje de error
+//dato importante es q si no hay encuesta no se muestra el mensaje de error
     var canvases = [statsCanvas, skillsCanvas];
     for (var i = 0; i < canvases.length; i += 1) {
       var canvas = canvases[i];
@@ -142,7 +167,7 @@ class PaginaEscuelas extends PageBase {
       ctx.textAlign = 'center';
       ctx.fillText('Completa la encuesta para ver esta gráfica', canvas.width / 2, canvas.height / 2);
     }
-
+//
     if (mapPanelCard) {
       mapPanelCard.style.display = 'none';
     }
