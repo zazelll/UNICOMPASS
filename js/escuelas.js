@@ -175,7 +175,7 @@ class PaginaEscuelas extends PageBase {
       mapHint.textContent = '';
     }
   }
-
+// aqui es 
   mostrarSugerencia() {
     var suggestionBox = this.get('suggestionBox');
     if (!suggestionBox) return;
