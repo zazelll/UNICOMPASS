@@ -175,7 +175,8 @@ class PaginaEscuelas extends PageBase {
       mapHint.textContent = '';
     }
   }
-// aqui es 
+// aqui es para mostrar la sugerencia de escuela y carrera según los 
+// resultados de la encuesta vocacional del usuario
   mostrarSugerencia() {
     var suggestionBox = this.get('suggestionBox');
     if (!suggestionBox) return;
