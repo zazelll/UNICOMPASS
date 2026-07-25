@@ -32,6 +32,7 @@ body {
   color: #334155;
   min-height: 100vh;
   padding: 40px;
+  overflow-x: hidden;
   background:
 
         linear-gradient(135deg, rgba(2, 6, 23, 0.65), rgba(15, 23, 42, 0.45)),
@@ -76,6 +77,23 @@ button {
 .page-shell {
   max-width: 1400px;
   margin: auto;
+  width: 100%;
+}
+
+.page-shell,
+.card,
+.container,
+.left-panel,
+.right-panel,
+.center-panel,
+.chart-panel,
+.login-box,
+.privacy-modal-content,
+.form-section,
+.question-card,
+.suggestion-card {
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 .card {
@@ -136,6 +154,7 @@ button {
   align-items: flex-start;
   gap: 30px;
   margin-bottom: 30px;
+  flex-wrap: wrap;
 }
 
 .left-panel,
@@ -149,16 +168,20 @@ button {
 }
 
 .left-panel {
-  width: 360px;
+  width: clamp(280px, 32vw, 360px);
+  flex: 0 1 360px;
   flex-shrink: 0;
+  max-width: 100%;
 }
 .right-panel {
-  flex: 1;
+  flex: 1 1 320px;
+  min-width: 0;
 }
 .center-panel,
 .chart-panel {
-  flex: 1;
+  flex: 1 1 420px;
   min-width: 0;
+  max-width: 100%;
 }
 
 .map-panel iframe {
@@ -252,6 +275,7 @@ label {
   gap: 18px;
   flex-wrap: wrap;
   margin-top: 30px;
+  width: 100%;
 }
 
 .button,
@@ -263,6 +287,8 @@ label {
   height: 56px;
   padding: 0 28px;
   border: none;
+  white-space: normal;
+  line-height: 1.3;
   border-radius: 14px;
   background: #2563eb;
   color: #ffffff !important;
@@ -441,10 +467,12 @@ label {
 .map-panel iframe,
 iframe {
   width: 100%;
+  max-width: 100%;
   height: 400px;
   min-height: 320px;
   border: none;
   border-radius: 15px;
+  display: block;
 }
 #mapHint,
 #mapNote {
@@ -688,11 +716,24 @@ tbody tr:hover {
   .container {
     flex-direction: column;
   }
-  .left-panel {
+  .left-panel,
+  .center-panel,
+  .right-panel,
+  .chart-panel {
+    width: 100%;
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+  .hero-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .imagen {
+    max-width: 100%;
     width: 100%;
   }
-  .center-panel {
-    width: 100%;
+  .imagen img {
+    max-width: 260px;
   }
 }
 
@@ -701,22 +742,45 @@ tbody tr:hover {
     padding: 20px;
   }
   .card {
-    padding: 28px;
+    padding: 24px;
   }
   .card h1 {
-    font-size: 28px;
+    font-size: clamp(24px, 5.2vw, 28px);
   }
   .hero-section {
     height: 180px;
   }
   .hero-text h1 {
-    font-size: 32px;
+    font-size: clamp(28px, 5vw, 32px);
+  }
+  .left-panel h1 {
+    font-size: clamp(24px, 4.5vw, 30px);
+  }
+  .button {
+    min-width: 0;
+    width: 100%;
+  }
+  .action-row {
+    gap: 12px;
+  }
+  .question-card,
+  .form-section,
+  .suggestion-card,
+  .privacy-modal-content {
+    padding: 20px;
   }
 }
 
 @media (max-width: 600px) {
   body {
-    padding: 16px;
+    padding: 12px;
+  }
+  .card {
+    padding: 18px;
+  }
+  .container {
+    gap: 16px;
+    margin-bottom: 16px;
   }
   .action-row {
     flex-direction: column;
@@ -725,14 +789,19 @@ tbody tr:hover {
   .button {
     width: 100%;
     min-width: 100%;
+    height: 50px;
+    font-size: 15px;
   }
   .left-panel,
   .right-panel,
-  .center-panel {
-    padding: 20px;
+  .center-panel,
+  .chart-panel {
+    padding: 18px;
+    border-radius: 16px;
   }
   .map-panel iframe,
   iframe {
-    height: 280px;
+    height: 250px;
+    min-height: 250px;
   }
 }
