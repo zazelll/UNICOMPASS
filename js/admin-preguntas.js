@@ -1,9 +1,17 @@
+// este archivo es lo que usa el admin para ver, agregar, editar
+// y eliminar las preguntas de la encuesta, directo desde admin.html
+// (sin tener que meterse a editar el Google Sheet a mano)
+
+// ---- ESTO ES UNA *CLASE* Y ADEMÁS ES *HERENCIA* ----
+// "class AdminPreguntasPage extends PageBase" hereda de PageBase
+// (la clase de storage.js), por eso puede usar this.get(id) sin
+// tener que volver a escribir document.getElementById() cada vez.
 class AdminPreguntasPage extends PageBase {
   constructor(api) {
-    super(api);
+    super(api); // llama primero al constructor del papá (PageBase)
     this.api = api;
-    this.preguntasCargadas = [];
-    this.filaEnEdicion = null;
+    this.preguntasCargadas = []; // aquí se guarda la lista de preguntas que trae del Sheet
+    this.filaEnEdicion = null; // null = estamos agregando una pregunta nueva, no editando
     this.mensaje = null;
     this.tbody = null;
     this.cargarPreguntasButton = null;
@@ -18,6 +26,9 @@ class AdminPreguntasPage extends PageBase {
     this.guardarPreguntaButton = this.get('guardarPreguntaButton');
     this.cancelarEdicionButton = this.get('cancelarEdicionButton');
 
+    // aquí se conectan los botones con sus funciones.
+    // ".bind(this)" hace que adentro de esas funciones "this" siga
+    // apuntando a la clase (AdminPreguntasPage), no al botón que se picó.
     if (this.cargarPreguntasButton) {
       this.cargarPreguntasButton.addEventListener('click', this.cargarPreguntasAdmin.bind(this));
     }
@@ -35,6 +46,8 @@ class AdminPreguntasPage extends PageBase {
     }
   }
 
+  // arma la tabla completa con todas las preguntas cargadas,
+  // y a cada fila le pone su botón de Editar y su botón de Eliminar
   mostrarPreguntasEnTabla() {
     if (!this.tbody) return;
     this.tbody.innerHTML = '';
@@ -54,6 +67,8 @@ class AdminPreguntasPage extends PageBase {
       editarButton.type = 'button';
       editarButton.className = 'button';
       editarButton.textContent = 'Editar';
+      // ".bind(this, pregunta.fila)" ya deja "amarrado" el número de
+      // fila de ESTA pregunta específica, para cuando se pique el botón
       editarButton.addEventListener('click', this.editarPreguntaEnFormulario.bind(this, pregunta.fila));
 
       var eliminarButton = document.createElement('button');
@@ -72,6 +87,8 @@ class AdminPreguntasPage extends PageBase {
     }
   }
 
+  // le pide a Apps Script (con el token de admin) TODAS las preguntas
+  // (activas e inactivas) para poder mostrarlas y editarlas aquí
   async cargarPreguntasAdmin() {
     this.setMensaje('Cargando...');
     var url = GOOGLE_SHEET_WEBAPP_URL + '?token=' + encodeURIComponent(ADMIN_TOKEN) + '&action=preguntasAdmin';
@@ -88,6 +105,8 @@ class AdminPreguntasPage extends PageBase {
     this.setMensaje(this.preguntasCargadas.length + ' pregunta(s) encontradas.');
   }
 
+  // cuando se pica "Editar" en una fila: busca esa pregunta en la
+  // lista ya cargada y llena el formulario de abajo con sus datos
   editarPreguntaEnFormulario(fila) {
     var pregunta = null;
     for (var i = 0; i < this.preguntasCargadas.length; i += 1) {
@@ -98,7 +117,7 @@ class AdminPreguntasPage extends PageBase {
     }
     if (!pregunta) return;
 
-    this.filaEnEdicion = fila;
+    this.filaEnEdicion = fila; // a partir de aquí, guardar = editar esta fila (no agregar una nueva)
     this.get('preguntaSeccion').value = pregunta.section;
     this.get('preguntaTexto').value = pregunta.text;
     this.get('preguntaActiva').value = pregunta.activa ? 'si' : 'no';
@@ -116,6 +135,7 @@ class AdminPreguntasPage extends PageBase {
     this.get('cancelarEdicionButton').style.display = 'inline-flex';
   }
 
+  // limpia el formulario y lo regresa al modo "agregar pregunta nueva"
   cancelarEdicionPregunta() {
     this.filaEnEdicion = null;
     this.get('preguntaTexto').value = '';
@@ -130,6 +150,8 @@ class AdminPreguntasPage extends PageBase {
     this.get('cancelarEdicionButton').style.display = 'none';
   }
 
+  // junta todo lo que hay escrito en el formulario en un solo objeto,
+  // listo para mandarlo a Apps Script
   datosDelFormularioPregunta() {
     return {
       token: ADMIN_TOKEN,
@@ -148,6 +170,9 @@ class AdminPreguntasPage extends PageBase {
     };
   }
 
+  // se dispara al picarle a "Agregar pregunta" / "Guardar cambios".
+  // Si this.filaEnEdicion tiene un número, edita esa fila; si es
+  // null, agrega una pregunta nueva. Los dos casos usan el mismo botón.
   async guardarPreguntaClick() {
     var datos = this.datosDelFormularioPregunta();
     if (!datos.pregunta || !datos.opcionA || !datos.opcionB || !datos.opcionC || !datos.opcionD) {
@@ -166,12 +191,13 @@ class AdminPreguntasPage extends PageBase {
     if (resultado.ok) {
       this.setMensaje('Guardado correctamente.');
       this.cancelarEdicionPregunta();
-      this.cargarPreguntasAdmin();
+      this.cargarPreguntasAdmin(); // vuelve a cargar la tabla para ver el cambio reflejado
     } else {
       this.setMensaje('Error: ' + resultado.error);
     }
   }
 
+  // se dispara al picarle a "Eliminar" en una fila
   async eliminarPreguntaClick(fila) {
     var confirmar = confirm('¿Seguro que quieres eliminar esta pregunta?');
     if (!confirmar) return;
@@ -191,7 +217,8 @@ class AdminPreguntasPage extends PageBase {
   }
 }
 
+// esto se ejecuta apenas termina de cargar el HTML de admin.html
 document.addEventListener('DOMContentLoaded', function () {
-  var page = new AdminPreguntasPage(window.UNICOMPASS);
+  var page = new AdminPreguntasPage(window.UNICOMPASS); // se crea el objeto real (se "instancia" la clase)
   page.init();
 });

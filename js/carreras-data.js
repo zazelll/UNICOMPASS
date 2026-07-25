@@ -1,5 +1,12 @@
+
+// (function () { ... })() es un "IIFE": una función que se ejecuta
+// sola, apenas se carga el archivo. Sirve para que las variables
+// de aquí adentro (CATEGORY_LABELS, CAREERS, etc.) no choquen con
+// variables de otros archivos que tengan el mismo nombre por accidente.
 (function () {
-  
+ 
+  // ---- ESTO ES UN OBJETO DE DATOS (no es clase ni función) ----
+  // Aquí solo guardo el nombre "bonito" de cada categoría de la encuesta
   const CATEGORY_LABELS = {
     TEC: 'Tecnología e Informática',
     ING: 'Ingeniería',
@@ -10,7 +17,9 @@
     CIE: 'Ciencias',
     DER: 'Derecho'
   };
-
+ 
+  // otro objeto de datos: el color que le toca a cada categoría
+  // (para pintar las gráficas de barras y pastel siempre igual)
   const CATEGORY_COLORS = {
     TEC: '#1f6feb',
     ING: '#0f766e',
@@ -21,8 +30,9 @@
     CIE: '#2f8c52',
     DER: '#334e68'
   };
-
-  
+ 
+  // este es el objeto más importante: por cada categoría, dice
+  // qué escuela, qué carreras y por qué motivo se le recomienda al usuario
   const CAREERS = {
     TEC: {
       escuela: 'Escuela de Ingeniería en Sistemas y Tecnología',
@@ -65,8 +75,12 @@
       motivo: 'Tus respuestas muestran gusto por la justicia, las normas y el análisis de casos.'
     }
   };
-
-  
+ 
+  // ---- ESTO ES UNA *FUNCIÓN* ----
+  // Recibe los puntajes (ej. {TEC: 4, ART: 2, ...}) y regresa una
+  // lista ordenada de mayor a menor, ya con su nombre bonito y su color
+  // (map crea una lista nueva transformando cada elemento,
+  // sort la ordena de mayor a menor puntaje)
   function getSortedEntries(scores) {
     return Object.keys(scores)
       .map((code) => ({
@@ -77,12 +91,15 @@
       }))
       .sort((a, b) => b.value - a.value);
   }
-
-  
+ 
+  // ---- ESTO ES OTRA *FUNCIÓN* ----
+  // Con la lista ya ordenada, agarra la categoría con más puntos (primary)
+  // y revisa si la segunda está muy cerca (menos de 18% de diferencia):
+  // si es así, se considera un "perfil mixto" y regresa también secondary
   function determinePrimarySecondary(scores) {
     const sorted = getSortedEntries(scores).filter((entry) => entry.value > 0);
     if (sorted.length === 0) return { primary: null, secondary: null };
-
+ 
     const primary = sorted[0];
     let secondary = null;
     if (sorted[1] && sorted[0].value > 0) {
@@ -94,7 +111,10 @@
     }
     return { primary, secondary };
   }
-
+ 
+  // aquí "pegamos" todos estos datos y funciones al mismo objeto
+  // window.UNICOMPASS que ya viene de storage.js, para que escuelas.js,
+  // menu.js y encuesta.js puedan usarlos como api.CAREERS, api.getSortedEntries(), etc.
   window.UNICOMPASS = window.UNICOMPASS || {};
   Object.assign(window.UNICOMPASS, {
     CATEGORY_LABELS,
@@ -104,3 +124,4 @@
     determinePrimarySecondary
   });
 })();
+ 

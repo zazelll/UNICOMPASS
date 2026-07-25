@@ -1,10 +1,16 @@
-// este archivo contiene la lógica para mostrar la página de escuelas recomendadas 
+// este archivo contiene la lógica para mostrar la página de escuelas recomendadas
 // según los resultados de la encuesta vocacional del usuario
+
+// ---- ESTO ES UNA *CLASE* BASE (no hereda de nada, no tiene "extends") ----
+// Grafica solo sabe limpiar el canvas. El método dibujar() está
+// a propósito vacío: cada tipo de gráfica (hija) lo va a rellenar
+// a su manera. Esto es lo que se necesita para poder hacer polimorfismo.
 class Grafica {
   constructor(canvas) {
-    this.canvas = canvas;//usa canva usdo n clase de ivan
+    this.canvas = canvas; // usa canvas usado en clase de Ivan
   }
-//sirve para limpiar el canvas antes de dibujar la gráfica
+
+  // sirve para limpiar el canvas antes de dibujar la gráfica
   limpiarCanvas() {
     var ctx = this.canvas.getContext('2d');
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -17,11 +23,18 @@ class Grafica {
     // Se implementa en las subclases -----.
   }
 }
-//sirve para dibujar una gráfica de barras en el canvas
+
+// ---- ESTO ES *HERENCIA* + *POLIMORFISMO* ----
+// GraficaDeBarras HEREDA de Grafica ("extends Grafica"), o sea que
+// ya trae gratis el constructor y limpiarCanvas(). Pero además
+// SOBREESCRIBE (redefine) el método dibujar() con su propia versión.
+// Esto es polimorfismo: el mismo nombre de método (dibujar) hace
+// algo diferente dependiendo de qué clase lo esté llamando.
+// sirve para dibujar una gráfica de barras en el canvas
 class GraficaDeBarras extends Grafica {
   dibujar(entradas) {
     if (!this.canvas) return;
-    var ctx = this.limpiarCanvas();
+    var ctx = this.limpiarCanvas(); // este método SÍ lo heredó de Grafica, no lo reescribió
     var width = this.canvas.width;
     var height = this.canvas.height;
     var padding = 40;
@@ -32,31 +45,35 @@ class GraficaDeBarras extends Grafica {
         maxValue = entradas[i].value;
       }
     }
-//sirve para calcular el ancho de cada barra y el espacio entre ellas
+
+    // sirve para calcular el ancho de cada barra y el espacio entre ellas
     var barSlot = (width - padding * 2) / entradas.length;
     var barWidth = barSlot * 0.6;
     if (barWidth > 50) {
       barWidth = 50;
     }
-//aqui es para dibujar el eje Y y el eje X de la gráfica de barras
-//beginPath() es para iniciar un nuevo camino de dibujo, 
-// moveTo() es para mover el lápiz a una posición sin dibujar, 
-// lineTo() es para dibujar una línea desde la posición actual hasta la posición especificada, 
-// stroke() es para dibujar el camino definido con beginPath(), moveTo() y lineTo()
+
+    // aqui es para dibujar el eje Y y el eje X de la gráfica de barras
+    // beginPath() es para iniciar un nuevo camino de dibujo,
+    // moveTo() es para mover el lápiz a una posición sin dibujar,
+    // lineTo() es para dibujar una línea desde la posición actual hasta la posición especificada,
+    // stroke() es para dibujar el camino definido con beginPath(), moveTo() y lineTo()
     ctx.strokeStyle = '#d8dde3';
     ctx.beginPath();
     ctx.moveTo(padding, padding);
     ctx.lineTo(padding, height - padding);
     ctx.lineTo(width - padding, height - padding);
     ctx.stroke();
-//sirve para dibujar las barras de la gráfica de barras y sus etiquetas
+
+    // sirve para dibujar las barras de la gráfica de barras y sus etiquetas
     for (var i = 0; i < entradas.length; i += 1) {
       var entrada = entradas[i];
       var barHeight = (entrada.value / maxValue) * (chartHeight - 20);
       var x = padding + barSlot * i + (barSlot - barWidth) / 2;
       var y = height - padding - barHeight;
-//aqui es para dibujar cada barra de la gráfica de barras con su color y su altura 
-// proporcional al valor de la entrada
+
+      // aqui es para dibujar cada barra de la gráfica de barras con su color y su altura
+      // proporcional al valor de la entrada
       ctx.fillStyle = entrada.color;
       ctx.fillRect(x, y, barWidth, barHeight);
 
@@ -69,16 +86,25 @@ class GraficaDeBarras extends Grafica {
     }
   }
 }
-//sirve para dibujar una gráfica de pastel en el canvas
+
+// ---- ESTA TAMBIÉN ES *HERENCIA* + *POLIMORFISMO* ----
+// GraficaDePastel TAMBIÉN hereda de Grafica, y también sobreescribe
+// dibujar(), pero de forma completamente distinta a GraficaDeBarras
+// (dibuja rebanadas de círculo en vez de rectángulos). Por eso más
+// abajo, en la clase PaginaEscuelas, puedo crear una GraficaDeBarras
+// y una GraficaDePastel y llamarles a las dos ".dibujar()" sin
+// preocuparme de cuál es cuál por dentro: cada una sabe hacer lo suyo.
+// sirve para dibujar una gráfica de pastel en el canvas
 class GraficaDePastel extends Grafica {
   constructor(canvas, etiquetaCentral) {
-    super(canvas);
+    super(canvas); // "super" manda el canvas al constructor de Grafica (el papá)
     this.etiquetaCentral = etiquetaCentral;
   }
-//sirve para dibujar la gráfica de pastel con las entradas proporcionadas
+
+  // sirve para dibujar la gráfica de pastel con las entradas proporcionadas
   dibujar(entradas) {
     if (!this.canvas) return;
-    var ctx = this.limpiarCanvas();
+    var ctx = this.limpiarCanvas(); // heredado de Grafica otra vez
     var centerX = this.canvas.width / 2;
     var centerY = this.canvas.height / 2;
     var radio = 90;
@@ -91,14 +117,15 @@ class GraficaDePastel extends Grafica {
     if (total === 0) {
       total = 1;
     }
-//sirve para dibujar cada rebanada de la gráfica de pastel con su color y su 
-// ángulo proporcional al valor de la entrada
-//beginPath() es para iniciar un nuevo camino de dibujo, 
-// moveTo() es para mover el lápiz a una posición sin dibujar, 
-// arc() es para dibujar un arco o círculo desde la posición actual hasta la posición especificada,
-// closePath() es para cerrar el camino de dibujo, 
-// fillStyle es para establecer el color de relleno, 
-// fill() es para rellenar el camino definido con beginPath(), moveTo(), arc() y closePath()
+
+    // sirve para dibujar cada rebanada de la gráfica de pastel con su color y su
+    // ángulo proporcional al valor de la entrada
+    // beginPath() es para iniciar un nuevo camino de dibujo,
+    // moveTo() es para mover el lápiz a una posición sin dibujar,
+    // arc() es para dibujar un arco o círculo desde la posición actual hasta la posición especificada,
+    // closePath() es para cerrar el camino de dibujo,
+    // fillStyle es para establecer el color de relleno,
+    // fill() es para rellenar el camino definido con beginPath(), moveTo(), arc() y closePath()
     for (var i = 0; i < entradas.length; i += 1) {
       var entrada = entradas[i];
       var anguloRebanada = (entrada.value / total) * (2 * Math.PI);
@@ -117,7 +144,13 @@ class GraficaDePastel extends Grafica {
     ctx.fillText(this.etiquetaCentral, centerX, centerY);
   }
 }
-//aui es importante para mostrar la sugerencia de escuela y carrera 
+
+// ---- ESTO ES UNA *CLASE* Y ADEMÁS ES *HERENCIA* ----
+// PaginaEscuelas hereda de PageBase (la clase de storage.js con
+// los métodos de ayuda get(), redirect(), etc.). Esta clase es la
+// que arma toda la página: la sugerencia, usa las 2 gráficas de
+// arriba, y prepara el mapa.
+// aqui es importante para mostrar la sugerencia de escuela y carrera
 // según los resultados de la encuesta vocacional del usuario
 class PaginaEscuelas extends PageBase {
   constructor(api) {
@@ -126,34 +159,38 @@ class PaginaEscuelas extends PageBase {
     this.user = api.getCurrentUser();
   }
 
+  // revisa si el usuario ya tiene un resultado guardado de la encuesta
   tieneResultado() {
     return !!(this.user && this.user.vocacionalResultado && this.user.vocacionalResultado.categoriaPrincipal);
   }
-//esto es para inicializar la página de escuelas cuando se carga el DOM
-//suggestionBox es para mostrar la sugerencia de escuela y carrera según los 
-// resultados de la encuesta vocacional del usuario
-//statsChart es para mostrar la gráfica de barras con las estadísticas del usuario
-//skillsChart es para mostrar la gráfica de pastel con las habilidades del usuario
-//schoolMapFrame es para mostrar el mapa de Google Maps con la ubicación del usuario 
-// y las escuelas recomendadas según su resultado de la encuesta vocacional
+
+  // esto es para inicializar la página de escuelas cuando se carga el DOM
+  // suggestionBox es para mostrar la sugerencia de escuela y carrera según los
+  // resultados de la encuesta vocacional del usuario
+  // statsChart es para mostrar la gráfica de barras con las estadísticas del usuario
+  // skillsChart es para mostrar la gráfica de pastel con las habilidades del usuario
+  // schoolMapFrame es para mostrar el mapa de Google Maps con la ubicación del usuario
+  // y las escuelas recomendadas según su resultado de la encuesta vocacional
   mostrarEstadoVacio() {
     var suggestionBox = this.get('suggestionBox');
     var statsCanvas = this.get('statsChart');
     var skillsCanvas = this.get('skillsChart');
     var mapHint = this.get('mapHint');
     var mapPanelCard = this.get('mapPanelCard');
-//este es para mostrar un mensaje indicando que aún no se ha completado la encuesta vocacional 
-// y se sugiere completarla para obtener resultados y sugerencias de escuelas y carreras
+
+    // este es para mostrar un mensaje indicando que aún no se ha completado la encuesta vocacional
+    // y se sugiere completarla para obtener resultados y sugerencias de escuelas y carreras
     if (suggestionBox) {
       suggestionBox.innerHTML =
         '<h3>Aún no tienes resultados :(</h3>' +
         '<p>Completa la encuesta vocacional para que podamos sugerirte una carrera y las escuelas más cercanas a ti. ve a contestar rapido!!!</p>' +
         '<p><a class="button" href="vocacional.html">Ir a la encuesta</a></p>';
     }
-//sirve para mostrar un mensaje indicando que aún no se ha completado la encuesta vocacional
-//esta parte salia muchos errores la manera q solucione fue poner un if para q si no hay 
-// encuesta no se muestre el mensaje de error
-//dato importante es q si no hay encuesta no se muestra el mensaje de error
+
+    // sirve para mostrar un mensaje indicando que aún no se ha completado la encuesta vocacional
+    // esta parte salia muchos errores la manera q solucione fue poner un if para q si no hay
+    // encuesta no se muestre el mensaje de error
+    // dato importante es q si no hay encuesta no se muestra el mensaje de error
     var canvases = [statsCanvas, skillsCanvas];
     for (var i = 0; i < canvases.length; i += 1) {
       var canvas = canvases[i];
@@ -167,7 +204,8 @@ class PaginaEscuelas extends PageBase {
       ctx.textAlign = 'center';
       ctx.fillText('Completa la encuesta para ver esta gráfica', canvas.width / 2, canvas.height / 2);
     }
-//aqui es para 
+
+    // aqui es para ocultar el mapa si no hay resultado todavía
     if (mapPanelCard) {
       mapPanelCard.style.display = 'none';
     }
@@ -175,14 +213,15 @@ class PaginaEscuelas extends PageBase {
       mapHint.textContent = '';
     }
   }
-// aqui es para mostrar la sugerencia de escuela y carrera según los 
-// resultados de la encuesta vocacional del usuario
+
+  // arma el HTML de la sugerencia de carrera/escuela con base en el
+  // resultado de la encuesta (this.user.vocacionalResultado)
   mostrarSugerencia() {
     var suggestionBox = this.get('suggestionBox');
     if (!suggestionBox) return;
 
     var resultado = this.user.vocacionalResultado;
-    var principal = this.api.CAREERS[resultado.categoriaPrincipal];
+    var principal = this.api.CAREERS[resultado.categoriaPrincipal]; // viene de carreras-data.js
     var secundaria = null;
     if (resultado.categoriaSecundaria) {
       secundaria = this.api.CAREERS[resultado.categoriaSecundaria];
@@ -229,6 +268,8 @@ class PaginaEscuelas extends PageBase {
       comparacionHtml;
   }
 
+  // arma la leyenda de colores debajo de cada gráfica (el cuadrito
+  // de color + el nombre de la categoría)
   mostrarLeyenda(contenedor, entradas) {
     if (!contenedor) return;
     var html = '';
@@ -243,6 +284,11 @@ class PaginaEscuelas extends PageBase {
     contenedor.innerHTML = html;
   }
 
+  // ---- AQUÍ SE VE EL *POLIMORFISMO* EN ACCIÓN ----
+  // Se crea un objeto GraficaDeBarras y un objeto GraficaDePastel
+  // (ambos "hijos" de Grafica), y a los dos se les llama exactamente
+  // el mismo método: ".dibujar(datos)". A pesar de llamarse igual,
+  // cada uno dibuja algo completamente distinto.
   mostrarGraficas() {
     var resultado = this.user.vocacionalResultado;
     var entradasEstadisticas = this.api.getSortedEntries(resultado.estadisticasScores);
@@ -268,14 +314,19 @@ class PaginaEscuelas extends PageBase {
     }
 
     var sinDatos = [{ label: 'Sin datos', value: 1, color: '#d8dde3' }];
-    var graficaEstadisticas = new GraficaDeBarras(this.get('statsChart'));
+
+    var graficaEstadisticas = new GraficaDeBarras(this.get('statsChart')); // instancia de la clase hija 1
     graficaEstadisticas.dibujar(estadisticasFiltradas.length ? estadisticasFiltradas : sinDatos);
-    var graficaHabilidades = new GraficaDePastel(this.get('skillsChart'), 'Habilidades');
+
+    var graficaHabilidades = new GraficaDePastel(this.get('skillsChart'), 'Habilidades'); // instancia de la clase hija 2
     graficaHabilidades.dibujar(habilidadesFiltradas.length ? habilidadesFiltradas : sinDatos);
+
     this.mostrarLeyenda(this.get('statsLegend'), estadisticasFiltradas);
     this.mostrarLeyenda(this.get('skillsLegend'), habilidadesFiltradas);
   }
 
+  // arma la URL del mapa embebido de Google (sin API key) con la
+  // escuela recomendada + la dirección del usuario
   mostrarMapa() {
     var mapFrame = this.get('schoolMapFrame');
     var mapLink = this.get('mapLink');
@@ -303,6 +354,7 @@ class PaginaEscuelas extends PageBase {
     }
   }
 
+  // el método que arranca todo cuando se abre la página
   iniciar() {
     if (!this.user) {
       this.redirect('secion.html');
@@ -318,9 +370,10 @@ class PaginaEscuelas extends PageBase {
   }
 }
 
+// esto se ejecuta apenas termina de cargar el HTML de escuelas.html
 document.addEventListener('DOMContentLoaded', function () {
   var api = window.UNICOMPASS;
   if (!api) return;
-  var page = new PaginaEscuelas(api);
+  var page = new PaginaEscuelas(api); // se crea el objeto (se "instancia" la clase)
   page.iniciar();
 });

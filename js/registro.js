@@ -1,8 +1,13 @@
-//sirve para registrar un nuevo usuario en el sistema
-//esto es sobre escrito en una clase ta usada en clase de ivan
+// sirve para registrar un nuevo usuario en el sistema
+// esto es sobre escrito en una clase ta usada en clase de ivan
+
+// ---- ESTO ES UNA *CLASE* Y ADEMÁS ES *HERENCIA* ----
+// "class RegistroPage extends PageBase" hereda de PageBase (la
+// clase de storage.js), así que RegistroPage ya trae los métodos
+// get(), redirect(), etc. sin tener que reescribirlos aquí.
 class RegistroPage extends PageBase {
   constructor(api) {
-    super(api);
+    super(api); // llama primero al constructor del papá (PageBase)
     this.registerMensaje = null;
     this.registerEstado = null;
     this.registerMunicipio = null;
@@ -17,14 +22,15 @@ class RegistroPage extends PageBase {
     this.fillEstados();
     this.bindEvents();
   }
-//esto sirve para cargar los elementos del DOM en las variables 
-// de la clase
-//esta parte lo investigue para que cuando se cargue la pagina 
-// de registro,
-// se inicialice la clase RegistroPage y se llame a su metodo init
-// para cargar los elementos del DOM en las variables de la clase
+
+  // esto sirve para cargar los elementos del DOM en las variables
+  // de la clase
+  // esta parte lo investigue para que cuando se cargue la pagina
+  // de registro,
+  // se inicialice la clase RegistroPage y se llame a su metodo init
+  // para cargar los elementos del DOM en las variables de la clase
   loadElements() {
-    this.registerMensaje = this.get('registerMensaje');
+    this.registerMensaje = this.get('registerMensaje'); // "get" es heredado de PageBase
     this.registerEstado = this.get('registerEstado');
     this.registerMunicipio = this.get('registerMunicipio');
     this.registerButton = this.get('registerButton');
@@ -32,27 +38,30 @@ class RegistroPage extends PageBase {
     this.privacyCheckbox = this.get('privacyCheckbox');
     this.privacyModal = this.get('privacyModal');
   }
-//sirve para enlazar los eventos de los botones y selectores
-//esto lo investigue para que cuando se cargue la pagina
+
+  // sirve para enlazar los eventos de los botones y selectores
+  // esto lo investigue para que cuando se cargue la pagina
   bindEvents() {
     if (this.registerButton) {
       this.registerButton.addEventListener('click', this.showPrivacy.bind(this));
-    }//sirve para aceptar los terminos de privacidad y registrar el usuario
+    } // sirve para aceptar los terminos de privacidad y registrar el usuario
     if (this.acceptPrivacyButton) {
       this.acceptPrivacyButton.addEventListener('click', this.onAcceptPrivacy.bind(this));
-    }//sirve para llenar los municipios cuando se cambia el estado en el select
+    } // sirve para llenar los municipios cuando se cambia el estado en el select
     if (this.registerEstado) {
       this.registerEstado.addEventListener('change', this.fillMunicipios.bind(this));
     }
   }
-//sirve para llenar el select de estados con los estados de mexico
-//esto lo investigue para que cuando se cargue la pagina
-// de registro, se llene el select de estados con los estados de mexico
+
+  // sirve para llenar el select de estados con los estados de mexico
+  // esto lo investigue para que cuando se cargue la pagina
+  // de registro, se llene el select de estados con los estados de mexico
   fillEstados() {
     if (!this.registerEstado || !this.registerMunicipio) return;
     const catalogo = window.MEXICO_ESTADOS_MUNICIPIOS || {};
-//sirve para deshabilitar el select de municipios hasta que 
-// se seleccione un estado
+
+    // sirve para deshabilitar el select de municipios hasta que
+    // se seleccione un estado
     this.registerMunicipio.disabled = true;
 
     for (const estado in catalogo) {
@@ -62,8 +71,9 @@ class RegistroPage extends PageBase {
       this.registerEstado.appendChild(opcion);
     }
   }
-//sirve para llenar el select de municipios con los municipios 
-// del estado seleccionado
+
+  // sirve para llenar el select de municipios con los municipios
+  // del estado seleccionado
   fillMunicipios() {
     if (!this.registerEstado || !this.registerMunicipio) return;
     const catalogo = window.MEXICO_ESTADOS_MUNICIPIOS || {};
@@ -74,8 +84,9 @@ class RegistroPage extends PageBase {
       this.registerMunicipio.disabled = true;
       return;
     }
-//sirve para habilitar el select de municipios cuando 
-// se selecciona un estado
+
+    // sirve para habilitar el select de municipios cuando
+    // se selecciona un estado
     this.registerMunicipio.disabled = false;
     const lista = catalogo[valor] || [];
     for (let i = 0; i < lista.length; i += 1) {
@@ -86,11 +97,12 @@ class RegistroPage extends PageBase {
       this.registerMunicipio.appendChild(opcion);
     }
   }
-//sirve para leer los datos del formulario de registro y
-// devolver un objeto con los datos
-//esto lo investigue para que cuando se haga click en el boton
-// de registro, se lean los datos del formulario y se devuelva 
-// un objeto con los datos
+
+  // sirve para leer los datos del formulario de registro y
+  // devolver un objeto con los datos
+  // esto lo investigue para que cuando se haga click en el boton
+  // de registro, se lean los datos del formulario y se devuelva
+  // un objeto con los datos
   readForm() {
     return {
       nombre: this.getValue('registerNombre'),
@@ -102,30 +114,33 @@ class RegistroPage extends PageBase {
       municipio: this.getValue('registerMunicipio')
     };
   }
-//sirve para obtener el valor de un elemento del DOM por su id
+
+  // sirve para obtener el valor de un elemento del DOM por su id
   getValue(id) {
     const element = this.get(id);
     if (!element) return '';
     return element.value.trim();
   }
-//sirve para validar los datos del formulario de registro
+
+  // sirve para validar los datos del formulario de registro
   validate(datos) {
     if (!datos.nombre || !datos.apellido || !datos.usuario || !datos.contraseña || !datos.email) {
       return 'Completa todos los campos por favor.';
-    }//sirve para validar el formato del correo electronico
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;//sirve para validar que el correo electronico tenga un formato valido (investige)
+    } // sirve para validar el formato del correo electronico
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // sirve para validar que el correo electronico tenga un formato valido (investige)
     if (!emailRegex.test(datos.email)) {
       return 'Ingresa un correo electrónico válido por favor.';
     }
     if (!datos.estado || !datos.municipio) {
       return 'Selecciona tu estado y municipio.';
-    }//sirve para validar que la contraseña tenga exactamente 8 digitos numericos
+    } // sirve para validar que la contraseña tenga exactamente 8 digitos numericos
     if (!/^\d{8}$/.test(datos.contraseña)) {
       return 'La contraseña debe tener exactamente 8 dígitos numéricos vuelve a corregir.';
     }
     return null;
   }
-//sirve para mostrar el modal de privacidad y desmarcar el checkbox
+
+  // sirve para mostrar el modal de privacidad y desmarcar el checkbox
   showPrivacy() {
     if (!this.privacyModal) return;
     this.privacyModal.classList.add('is-open');
@@ -133,28 +148,33 @@ class RegistroPage extends PageBase {
       this.privacyCheckbox.checked = false;
     }
   }
-//sirve para ocultar el modal de privacidad
+
+  // sirve para ocultar el modal de privacidad
   hidePrivacy() {
     if (!this.privacyModal) return;
     this.privacyModal.classList.remove('is-open');
   }
-//sirve para mostrar un mensaje en el elemento registerMensaje
+
+  // sirve para mostrar un mensaje en el elemento registerMensaje
   showMessage(text) {
     if (this.registerMensaje) {
       this.registerMensaje.textContent = text;
     }
   }
-//sirve para manejar el evento de aceptar los terminos de privacidad
+
+  // sirve para manejar el evento de aceptar los terminos de privacidad
   async onAcceptPrivacy() {
     if (!this.privacyCheckbox || !this.privacyCheckbox.checked) {
       this.showMessage('Debes aceptar los términos de privacidad por favor.');
       return;
     }
-//sirve para ocultar el modal de privacidad y registrar el usuario
+
+    // sirve para ocultar el modal de privacidad y registrar el usuario
     this.hidePrivacy();
     await this.registerUsuario();
   }
-//sirve para registrar el usuario en el sistema
+
+  // sirve para registrar el usuario en el sistema
   async registerUsuario() {
     const datos = this.readForm();
     const error = this.validate(datos);
@@ -162,8 +182,10 @@ class RegistroPage extends PageBase {
       this.showMessage(error);
       return;
     }
-//sirve para mostrar un mensaje de registrando mientras se hace la peticion a la api
+
+    // sirve para mostrar un mensaje de registrando mientras se hace la peticion a la api
     this.showMessage('Registrando...');
+    // "await" espera la respuesta real de Google Sheets antes de seguir
     const respuesta = await this.api.registerUser(
       datos.nombre,
       datos.apellido,
@@ -173,7 +195,8 @@ class RegistroPage extends PageBase {
       datos.estado,
       datos.municipio
     );
-//sirve para mostrar un mensaje de registro guardado o error dependiendo de la respuesta de la api
+
+    // sirve para mostrar un mensaje de registro guardado o error dependiendo de la respuesta de la api
     if (respuesta.ok) {
       this.showMessage('Registro se guardó que bueno. Iniciando sesión.');
       setTimeout(function () {
@@ -184,8 +207,9 @@ class RegistroPage extends PageBase {
     }
   }
 }
-//sirve para inicializar la pagina de registro cuando se carga el DOM
+
+// sirve para inicializar la pagina de registro cuando se carga el DOM
 document.addEventListener('DOMContentLoaded', function () {
-  const page = new RegistroPage(window.UNICOMPASS);
+  const page = new RegistroPage(window.UNICOMPASS); // se crea el objeto real (se "instancia" la clase)
   page.init();
 });

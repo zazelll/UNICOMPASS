@@ -1,3 +1,7 @@
+//este archivo sirve para manejar la página de login y admin esto resuelve lo de localstorage y la comunicación con Google Sheets 
+// para registrar, login, editar perfil y mostrar los usuarios en la tabla de admin.
+//sirve para configurar la url del webapp 
+// de google sheets y el token de administrador
 class LoginPage extends PageBase {
   constructor(api) {
     super(api);
@@ -13,12 +17,13 @@ class LoginPage extends PageBase {
     this.logoutLink = null;
     this.registrosCargados = [];
   }
-
+// sirve para inicializar la página de login y 
+// admin
   init() {
     this.loadElements();
     this.bindEvents();
   }
-
+// sirve para cargar los elementos del DOM en las variables de la clase
   loadElements() {
     this.loginUsuario = this.get('loginUsuario');
     this.loginPassword = this.get('loginPassword');
@@ -31,7 +36,7 @@ class LoginPage extends PageBase {
     this.sheetMensaje = this.get('sheetMensaje');
     this.logoutLink = this.get('logoutLink');
   }
-
+// sirve para enlazar los eventos de los botones y campos de entrada
   bindEvents() {
     if (this.loginButton) {
       this.loginButton.addEventListener('click', this.onLoginClick.bind(this));
@@ -46,13 +51,13 @@ class LoginPage extends PageBase {
       this.logoutLink.addEventListener('click', this.onLogoutClick.bind(this));
     }
   }
-
+// sirve para establecer un mensaje en la página de login
   setMessage(text) {
     if (this.loginMensaje) {
       this.loginMensaje.textContent = text;
     }
   }
-
+// sirve para mostrar los usuarios en la tabla de admin
   mostrarUsuariosEnTabla(usuarios) {
     if (!this.usersTable) return;
     const tbody = this.usersTable.querySelector('tbody');
@@ -74,7 +79,7 @@ class LoginPage extends PageBase {
       tbody.appendChild(fila);
     }
   }
-
+// sirve para cargar los usuarios desde Google Sheets y mostrarlos en la tabla de admin
   async cargarUsuariosDesdeSheets() {
     if (this.sheetMensaje) {
       this.sheetMensaje.textContent = 'Cargando...';
