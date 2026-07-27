@@ -1,0 +1,12 @@
+los diseños fueron areglados
+-ya hace registros mediente googgle 
+-cada js tiene descripción de q hace y explicación y también puse q es cada uno q se vio en clase y tratado de explicar ccomo funciona 
+q hace y el porque
+
+-como se soluciono los preblemas=
+
+mediante YouTube se unvestigo los problemas de conectar Excel a la pagina sin enmabro el problema principal era las versiones aca q se actualizba el código de Excel para guardar ahí era q se tenia q actualizar y publicar la versión de Google script
+
+los js están con código reutilizado por las clases vistas lo único q es nuevo es la coneccion de Excel.
+
+los HTML y css ya están arreglados
