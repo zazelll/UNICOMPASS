@@ -1,0 +1,47 @@
+.section-title {
+  margin-top: 0;
+  font-weight: 700;
+  color: #1e3a8a;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  background: #ffffff;
+  border: 1px solid #dbeafe;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+thead {
+  background: #eff6ff;
+}
+
+th,
+td {
+  padding: 14px 12px;
+  text-align: left;
+  font-size: 0.95rem;
+  color: #334155;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+th {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #2563eb;
+}
+
+tbody tr:hover {
+  background: #f8fbff;
+}
+
+#logoutLink {
+  background: #dc2626;
+}
+
+#logoutLink:hover {
+  background: #b91c1c;
+}

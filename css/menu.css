@@ -1,0 +1,16 @@
+/* Estilos específicos para menu.html */
+#mapCaption {
+  font-size: 20px;
+  font-weight: 600;
+  color: #2563eb;
+  margin-bottom: 12px;
+}
+
+#mapNote {
+  margin-top: 12px;
+  color: #64748b;
+}
+
+.center-panel.map-panel {
+  padding: 24px;
+}

@@ -1,0 +1,65 @@
+.privacy-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  padding: 25px;
+  z-index: 1000;
+}
+.privacy-modal.is-open {
+  display: flex;
+}
+.privacy-modal-content {
+  width: 100%;
+  max-width: 650px;
+  background: white;
+  border-radius: 20px;
+  padding: 35px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
+}
+.privacy-modal-content h2 {
+  color: #1e3a8a;
+  margin-bottom: 18px;
+}
+.privacy-text {
+  margin-bottom: 18px;
+  color: #475569;
+  line-height: 1.8;
+}
+.privacy-checkbox {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-bottom: 25px;
+}
+.privacy-checkbox input {
+  margin-top: 4px;
+}
+.login-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.login-box {
+  width: 100%;
+  max-width: 480px;
+  background: white;
+  padding: 45px;
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+}
+.register {
+  text-align: center;
+  margin-top: 25px;
+}
+.register a {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 600;
+}
+.register a:hover {
+  text-decoration: underline;
+}

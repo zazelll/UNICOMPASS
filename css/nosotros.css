@@ -1,0 +1,39 @@
+.hero-section {
+  height: 260px;
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+.hero-overlay {
+  text-align: center;
+  color: white;
+}
+
+.hero-text h1 {
+  color: #1e3a8a;
+  font-size: 50px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.hero-text .intro {
+  color: #475569;
+}
+
+.content-section {
+  padding: 45px;
+}
+
+.info-image {
+  display: block;
+  margin: 30px auto;
+  width: 260px;
+  transition: 0.3s;
+}
+
+.info-image:hover {
+  transform: scale(1.05);
+}

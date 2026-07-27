@@ -1,0 +1,9 @@
+.edit-profile-card {
+  max-width: 720px;
+  margin: auto;
+}
+
+.edit-profile-card .action-row {
+  justify-content: flex-start;
+  gap: 14px;
+}

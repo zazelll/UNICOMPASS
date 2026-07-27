@@ -1,0 +1,15 @@
+.profile-container {
+  display: flex;
+  justify-content: center;
+  padding-top: 20px;
+}
+
+.profile-card {
+  max-width: 720px;
+  margin: auto;
+}
+
+.profile-card .action-row {
+  justify-content: flex-start;
+  gap: 14px;
+}

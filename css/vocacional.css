@@ -1,0 +1,14 @@
+/* Estilos específicos para vocacional.html */
+.vocacional-card {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.vocacional-card .action-row {
+  justify-content: center;
+  gap: 14px;
+}
+
+.vocacional-card .button {
+  min-width: 160px;
+}
