@@ -79,7 +79,9 @@
       // con sus funciones. ".bind(this)" es para que adentro de esas
       // funciones "this" siga apuntando a la clase, no al botón.
       if (this.elements.prevButton) {
-        this.elements.prevButton.addEventListener('click', this.goToStep.bind(this, this.currentStep - 1));
+        this.elements.prevButton.addEventListener('click', function () {
+          this.goToStep(this.currentStep - 1);
+        }.bind(this));
       }
       if (this.elements.nextButton) {
         this.elements.nextButton.addEventListener('click', this.onNextClick.bind(this));
@@ -114,11 +116,46 @@
         return; // si faltan preguntas por responder, no avanza
       }
       this.goToStep(this.currentStep + 1);
+      // mensajes breves y animados según el progreso
+      try {
+        const messages = {
+          1: 'Bien, falta poco — sigue así.',
+          2: 'Ya casi terminas, buen trabajo.',
+          3: 'Solo por último, estás cerca.',
+          4: 'Última sección, lo tienes.'
+        };
+        const msg = messages[this.currentStep] || 'Continuando...';
+        this.showToast(msg);
+      } catch (e) {
+        console.warn('Toast error:', e);
+      }
     }
  
     clearStepWarning() {
       if (this.elements.stepWarning) {
         this.elements.stepWarning.textContent = '';
+      }
+    }
+
+    // muestra un toast breve en pantalla
+    showToast(message) {
+      try {
+        var container = document.getElementById('toastContainer');
+        if (!container) {
+          container = document.createElement('div');
+          container.id = 'toastContainer';
+          document.body.appendChild(container);
+        }
+        var toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.textContent = message;
+        container.appendChild(toast);
+        // mostrar con animación
+        setTimeout(function () { toast.classList.add('visible'); }, 10);
+        // ocultar y eliminar después
+        setTimeout(function () { toast.classList.remove('visible'); setTimeout(function () { try { toast.remove(); } catch (e) {} }, 300); }, 1600);
+      } catch (e) {
+        console.warn('No se pudo mostrar toast:', e);
       }
     }
  
