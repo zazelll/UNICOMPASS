@@ -1,0 +1,87 @@
+/* Estilos para la página de consejos */
+.consejos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.consejo-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 12px 30px rgba(2,6,23,0.06);
+  border: 1px solid rgba(15,23,42,0.04);
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.consejo-icono {
+  width: 54px;
+  height: 54px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #e0f2fe, #bfdbfe);
+  flex: 0 0 54px;
+}
+
+.consejo-card h3 {
+  margin: 0 0 8px 0;
+  color: #0f172a;
+  font-size: 1.05rem;
+}
+
+.consejo-card p {
+  margin: 0;
+  color: #475569;
+  line-height: 1.6;
+}
+
+/* Tamaño de la imagen en el hero */
+.imagen img {
+  width: 290px;
+  height: auto;
+  max-width: 100%;
+  display: block;
+}
+
+/* Variantes de color para cada tarjeta (tonos azules / verdosos) */
+.consejos-grid > .consejo-card:nth-child(1) {
+  background: linear-gradient(135deg, #eaf3ff 0%, #dbeafe 100%);
+  border-color: #c7ddff;
+}
+.consejos-grid > .consejo-card:nth-child(2) {
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border-color: #bbf7d0;
+}
+.consejos-grid > .consejo-card:nth-child(3) {
+  background: linear-gradient(135deg, #ecfeff 0%, #cffafe 100%);
+  border-color: #a5f3fc;
+}
+.consejos-grid > .consejo-card:nth-child(4) {
+  background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+  border-color: #c7d2fe;
+}
+.consejos-grid > .consejo-card:nth-child(5) {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-color: #bfdbfe;
+}
+.consejos-grid > .consejo-card:nth-child(6) {
+  background: linear-gradient(135deg, #f0fdf4 0%, #e6f9ee 100%);
+  border-color: #bbf7d0;
+}
+
+.consejos-grid > .consejo-card h3 {
+  color: #083344;
+}
+
+@media (max-width: 600px) {
+  .consejo-card {
+    padding: 14px;
+  }
+  .consejo-icono {
+    width: 46px;
+    height: 46px;
+    flex: 0 0 46px;
+  }
+}

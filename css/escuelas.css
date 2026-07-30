@@ -43,3 +43,43 @@
   margin-top: 12px;
   color: #64748b;
 }
+
+/* Historial de intentos */
+#historialIntentos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.tarjeta-intento {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 12px 14px;
+  box-shadow: 0 6px 18px rgba(16, 42, 67, 0.06);
+  border: 1px solid #e6eef7;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.tarjeta-intento-actual {
+  border-left: 4px solid #2563eb;
+  background: linear-gradient(90deg, #fbfdff, #f3f8ff);
+}
+
+.tarjeta-intento-anterior {
+  opacity: 0.95;
+}
+
+.tarjeta-intento .small-text {
+  font-size: 0.78rem;
+  color: #64748b;
+  margin: 0 0 6px 0;
+}
+
+.tarjeta-intento h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: #102a43;
+}

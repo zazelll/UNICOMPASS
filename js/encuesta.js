@@ -367,6 +367,13 @@
         if (ok) {
           this.elements.surveyMessage.textContent = 'Tus respuestas fueron enviadas. Revisa tus resultados en Escuelas.';
           this.elements.surveyMessage.style.color = '#2f8c52';
+          try {
+            if (window.HISTORIAL_INTENTOS) {
+              window.HISTORIAL_INTENTOS.guardarIntento(this.user.usuario, vocacionalResultado);
+            }
+          } catch (e) {
+            console.warn('No se pudo guardar en el historial local:', e);
+          }
         } else {
           this.elements.surveyMessage.textContent = 'No se pudieron guardar tus respuestas. Intenta de nuevo.';
           this.elements.surveyMessage.style.color = '#c0392b';

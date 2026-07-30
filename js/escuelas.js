@@ -367,6 +367,15 @@ class PaginaEscuelas extends PageBase {
     this.mostrarSugerencia();
     this.mostrarGraficas();
     this.mostrarMapa();
+    // mostrar historial de intentos (si existe)
+    try {
+      var historialContainer = this.get('historialIntentos');
+      if (window.HISTORIAL_INTENTOS) {
+        window.HISTORIAL_INTENTOS.renderForUser(this.user.usuario, this.api, historialContainer);
+      }
+    } catch (e) {
+      console.warn('Error al renderizar historial de intentos:', e);
+    }
   }
 }
 
